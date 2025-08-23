@@ -2,6 +2,12 @@
 
 `repoenv [global options] <command> [command] [args]`
 
+## Concepts
+
+There are two concepts, `environments` and `services`.  Environments are defined as a merge of several files, as specified in the config file.  A service is a file merged from the environment file.
+
+Typically all values are set in the environments file(s) (unless a variable is truely only used in that one service), and service files are used for allowlisting and final validation.
+
 ## Global options
 
 Apply to every command:
