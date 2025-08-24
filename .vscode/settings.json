@@ -5,5 +5,8 @@
   },
   "eslint.validate": ["typescript", "typescriptreact", "javascript"],
   "files.eol": "\n",
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "vitest.commandLine": "pnpm vitest",
+  "vitest.include": ["src/**/*.{test,spec}.ts?(x)"],
+  "vitest.watchOnStartup": "all-tests"
 }
