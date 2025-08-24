@@ -1,0 +1,66 @@
+# repoenv TODO
+
+| Area | Task | Status | Notes |
+|------|------|--------|-------|
+| **Global Options** | Implement `--env <name>` support | ☐ | Select environment context when running any command. |
+| | Implement `-c, --config <path>` | ☐ | Load alternate `repoenv.config.yaml`. |
+| | Implement `-v, --verbose` (repeatable) | ☐ | Each `-v` increases logging detail. |
+| | Implement `-q, --quiet` | ☐ | Suppress non-error output. |
+| | Implement `--json` output | ☐ | Standardized machine-readable output for all commands. |
+| | Implement `--color / --no-color` | ☐ | Force/disable ANSI colors. |
+| | Implement `--dry-run` | ☐ | Run commands but print what would happen. |
+| | Implement `-V, --version` | ☐ | Print repoenv version. |
+| | Implement `-h, --help` | ☐ | Print help with commands/options. |
+| **Core Infra** | Config file loader (`repoenv.config.yaml`) | ☐ | Parse sources, key handling, environment mapping. |
+| | Environment resolver | ☐ | Resolve `--env` into ordered list of env var files. |
+| | Piped input key handling | ☐ | If stdin is provided, treat as encryption key. |
+| **Commands: `lint`** | Validate all env var files | ☐ | Parse + check schema compliance. |
+| | Support `--fix` | ☐ | Auto-correct issues (whitespace, ordering, redact misflags). |
+| | Handle `targets...` | ☐ | Limit linting to given files/dirs. |
+| | Validation rules | ☐ | - Check schema correctness<br>- Detect unredacted secrets<br>- Verify dependency graph<br>- Validate `unique` constraints |
+| **Commands: `compile`** | Merge environment variable sources | ☐ | Respect ordering defined in config. |
+| | Alphabetize keys | ☐ | Sort before output. |
+| | Strip whitespace from values | ☐ | Normalize before output. |
+| | Handle secret redaction | ☐ | Based on `--redact`, `--no-redact`, or config defaults. |
+| | Implement `--keys-only` | ☐ | Output only env var names. |
+| **Commands: `run`** | Write merged env to `<output-file>` | ☐ | Compile first, then export to file. |
+| | Execute `<command...>` with scoped env | ☐ | Run child process with only those vars set. |
+| | Support `--no-validate` | ☐ | Skip schema validation if requested. |
+| **Commands: `encrypt`** | Encrypt plaintext value | ☐ | Replace value with encrypted string. |
+| | Support `-f, --file <source-file>` | ☐ | Restrict to one env file. |
+| | Default: update all env sources | ☐ | If file not provided. |
+| | Ignore stdin for value | ☐ | Only use CLI args/file. |
+| **Commands: `unencrypt`** | Decrypt value | ☐ | Restore plaintext into file. |
+| | Support `-f, --file <source-file>` | ☐ | Restrict to one file. |
+| | Default: update all env sources | ☐ | If file not provided. |
+| **Commands: `rotate`** | Generate new encryption key | ☐ | Create new key material. |
+| | Decrypt all secrets, re-encrypt | ☐ | Atomic, rollback if failure. |
+| | Support `--via <command>` | ☐ | Fetch key from external command. |
+| **Commands: `doctor`** | Check encryption key availability | ☐ | Report found/missing. |
+| | Run substitution commands | ☐ | Validate substitutions resolve correctly. |
+| | Report summary | ☐ | Indicate success/failure clearly. |
+| **Commands: `init`** | Scaffold `repoenv.config.yaml` | ☐ | Populate version, key config, default env sources. |
+| **Validation: Config Files** | Define schema for `repoenv.config.yaml` | ☐ | Required fields: version, key, sources. |
+| | Support `$schema` hint in YAML | ☐ | For tooling compatibility. |
+| **Validation: Env Var Files** | Define schema for env var entries | ☐ | Fields: `value`, `derived_value`, `substitution`, `encrypted`, `validator`, `redact`, `format`, `unique`. |
+| | Validate dependency graph | ☐ | Detect invalid `$VAR` references. |
+| | Validate `unique` constraints | ☐ | Ensure values are unique across listed patterns. |
+| | Validate filter rules | ☐ | Accept include/exclude patterns. |
+| | Validate file-level `validator` | ☐ | Run after all vars are resolved. |
+| **Validation: Formats – Strings** | Basic `string` | ☐ | Allow arbitrary text. |
+| | `string[min,max]` | ☐ | Enforce length bounds. |
+| **Validation: Formats – Numbers** | `integer` | ☐ | Parse + validate. |
+| | `integer(min,max)` / `integer[min,max]` variants | ☐ | Handle inclusive/exclusive brackets. |
+| | `float` equivalents | ☐ | Support min/max validation. |
+| **Validation: Formats – Dates** | `iso8601` | ☐ | Strict ISO 8601 parsing. |
+| **Validation: Formats – Network IDs** | `url` | ☐ | Must be valid URL. |
+| | `email` | ☐ | Standard email regex. |
+| | `ipv4`, `ipv6` | ☐ | Must be valid addresses. |
+| **Validation: Formats – Identifiers** | `uuid` | ☐ | RFC4122 compliant. |
+| | `ulid` | ☐ | ULID spec validation. |
+| **Validation: Formats – Encodings** | `base64[min,max]` | ☐ | Validate decoded length in bits. |
+| | `hex[min,max]` | ☐ | Validate hex length in bits. |
+| **Cross-cutting** | Error handling | ☐ | Consistent error codes/messages. |
+| | Logging system | ☐ | Respect verbose/quiet/json modes. |
+| | Test suite | ☐ | Unit + integration for all commands. |
+| | CLI UX polish | ☐ | Examples, edge case handling. |
