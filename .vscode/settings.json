@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "eslint.validate": ["typescript", "typescriptreact", "javascript"],
+  "files.eol": "\n",
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
