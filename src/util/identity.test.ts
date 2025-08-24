@@ -1,9 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import { identity } from './identity';
 
 const sum = (a: number, b: number) => a + b;
-function identity<T>(value: T): T {
-  return value;
-}
 
 describe('identity', () => {
   describe('sum', () => {
