@@ -4,7 +4,7 @@
 
 ## Concepts
 
-There are two concepts, `environments` and `services`.  Environments are defined as a merge of several files, as specified in the config file.  A service is a file merged from the environment file.
+There are two concepts, `environments` and `services`. Environments are defined as a merge of several files, as specified in the config file. A service is a file merged from the environment file.
 
 Typically all values are set in the environments file(s) (unless a variable is truely only used in that one service), and service files are used for allowlisting and final validation.
 
@@ -94,23 +94,24 @@ Scaffold a new config file (`repoenv.config.yaml`).
 > TBD
 
 #### Example
+
 ```yaml
 version: 0 # Version number, defaults to 'latest'
 
 key:
-  via: "echo my_key_value"
+  via: 'echo my_key_value'
 
 sources:
   local:
-  - env/base.yaml
-  - env/local.yaml
-  - override.yaml
+    - env/base.yaml
+    - env/local.yaml
+    - override.yaml
   dev:
-  - env/base.yaml
-  - env/dev.yaml
+    - env/base.yaml
+    - env/dev.yaml
   prod:
-  - env/base.yaml
-  - env/prod.yaml
+    - env/base.yaml
+    - env/prod.yaml
 ```
 
 ### Env var file format
@@ -121,41 +122,42 @@ sources:
 
 ```yaml
 vars:
-- BASIC_VAR: "a string, plaintext, unvalidated, unredacted"
-- DERIVED_VAR:
-  derived_value: "something about $BASIC_VAR"
-- SUBSTITUTED_VAR:
-  substitution: "some command to fetch the value"
-- PLAINTEXT_FANCY_VAR:
-  value: "this is my value"
-  validator: "some command to validate the value"
-- ENCRYPTED_FANCY_VAR:
-  ecrypted: "xyz789"
-  format: "string"
-- BAD_SECRET_VAR:
-  value: "my secret value"
-  redact: false # note: this will throw a lint error, since the secret is in plaintext
-- GOOD_SECRET_VAR:
-  ecrypted: "xyz789"
-  redact: false
-- UNIQUE_VAR_PORT:
-  value: "this is my value"
-  format: "number"
-  unique:
-  - "*_PORT"
-  - "SOME_VARIABLE"
-- REGEX_VALIDATED_VAR:
-  value: "boop"
-  regexp: "$boop^"
+  - BASIC_VAR: 'a string, plaintext, unvalidated, unredacted'
+  - DERIVED_VAR:
+    derived_value: 'something about $BASIC_VAR'
+  - SUBSTITUTED_VAR:
+    substitution: 'some command to fetch the value'
+  - PLAINTEXT_FANCY_VAR:
+    value: 'this is my value'
+    validator: 'some command to validate the value'
+  - ENCRYPTED_FANCY_VAR:
+    ecrypted: 'xyz789'
+    format: 'string'
+  - BAD_SECRET_VAR:
+    value: 'my secret value'
+    redact: false # note: this will throw a lint error, since the secret is in plaintext
+  - GOOD_SECRET_VAR:
+    ecrypted: 'xyz789'
+    redact: false
+  - UNIQUE_VAR_PORT:
+    value: 'this is my value'
+    format: 'number'
+    unique:
+      - '*_PORT'
+      - 'SOME_VARIABLE'
+  - REGEX_VALIDATED_VAR:
+    value: 'boop'
+    regexp: '$boop^'
 filter:
-- "IMPORTANT_VAR"
-- "INCLUDED_PATTERN_*"
-- "!EXCLUDED_VAR_NAME"
-- "!EXCLUDED_PATTERN_*"
-validator: "some command to validate entire set of variables"
+  - 'IMPORTANT_VAR'
+  - 'INCLUDED_PATTERN_*'
+  - '!EXCLUDED_VAR_NAME'
+  - '!EXCLUDED_PATTERN_*'
+validator: 'some command to validate entire set of variables'
 ```
 
 Formats:
+
 - `string`
   - `string[[min-length][,<max-length>]]`
 - `url`
@@ -181,6 +183,7 @@ Formats:
   - `hex[[min-length-in-bits][,<max-length-in-bits>]]`
 
 Variable dependencies:
+
 - Within a file, the dependency graph of variables is calculated based on `derived_value` and `substitution` values (i.e. `$<varname>`).
 - Errors with this are caught via lint
 - Errors prevent these values from being calculated
