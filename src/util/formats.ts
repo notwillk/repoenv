@@ -23,6 +23,14 @@ type Formats = {
   floatModifiedFormats: readonly string[];
 };
 
+function isParsedStaticFormat(format: ParsedFormat): format is ParsedStaticFormat {
+  return !format.hasModifier;
+}
+
+function isParsedModifiedFormat(format: ParsedFormat): format is ParsedModifiedFormat {
+  return format.hasModifier;
+}
+
 export const INTEGER_PATTERN = '[+-]?\\d+';
 export const FLOAT_PATTERN = '[+-]?\\d+(?:\\.\\d*)?';
 
@@ -130,6 +138,10 @@ export function parseFormat(maybeFormat: string, formats: Formats): ParsedFormat
   }
 
   if (min !== undefined && max !== undefined) {
+    if (min > max) {
+      throw new Error('Invalid range: min is greater than max');
+    }
+
     return {
       type,
       hasModifier: true,
@@ -141,4 +153,30 @@ export function parseFormat(maybeFormat: string, formats: Formats): ParsedFormat
   }
 
   throw new Error('Unexpected parse state');
+}
+
+export function getFormatValidator(format: ParsedFormat) {
+  return function validate(value: number | null): boolean {
+    function tooLow() {
+      if (isParsedModifiedFormat(format)) {
+        if (value === null) return false;
+        const { min, minIncluded } = format;
+        return min === undefined ? false : minIncluded ? value < min : value <= min;
+      }
+
+      return false;
+    }
+
+    function tooHigh() {
+      if (isParsedModifiedFormat(format)) {
+        if (value === null) return false;
+        const { max, maxIncluded } = format;
+        return max === undefined ? false : maxIncluded ? value > max : value >= max;
+      }
+
+      return false;
+    }
+
+    return !tooLow() && !tooHigh();
+  };
 }
