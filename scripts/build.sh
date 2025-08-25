@@ -12,8 +12,8 @@ if [[ $# -gt 1 || ( $# -eq 1 && "$1" != "--watch" ) ]]; then
 fi
 
 if [[ "${1:-}" == "--watch" ]]; then
-  npm link
-  trap 'npm unlink -g repoenv' EXIT
+  npm link --silent --no-audit --no-fund --loglevel=error
+  trap 'npm unlink -g repoenv  --silent --loglevel=error' EXIT
 
   commands=()
   command_names=()
@@ -26,6 +26,10 @@ if [[ "${1:-}" == "--watch" ]]; then
   commands+=("npx nodemon --quiet --watch . --ext ts,tsx --exec 'pnpm run build:schema:config'")
   command_names+=("schema:config")
   command_colors+=("magenta")
+
+  commands+=("npx nodemon --quiet --watch . --ext ts,tsx --exec 'pnpm run build:schema:variables'")
+  command_names+=("schema:variables")
+  command_colors+=("yellow")
 
   IFS=, names="${command_names[*]}"
   IFS=, colors="${command_colors[*]}"
