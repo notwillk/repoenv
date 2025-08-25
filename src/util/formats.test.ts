@@ -19,8 +19,6 @@ import {
   getRangePattern,
   getFormatValidator,
 } from './formats';
-import { exit } from 'process';
-import { match } from 'assert';
 
 const TEST_STATIC_FORMATS = ['url', 'iso8601', 'email', 'ipv4', 'ipv6'];
 const TEST_INTEGER_MODIFIED_FORMATS = ['string', 'base64', 'hex'];

@@ -23,10 +23,6 @@ type Formats = {
   floatModifiedFormats: readonly string[];
 };
 
-function isParsedStaticFormat(format: ParsedFormat): format is ParsedStaticFormat {
-  return !format.hasModifier;
-}
-
 function isParsedModifiedFormat(format: ParsedFormat): format is ParsedModifiedFormat {
   return format.hasModifier;
 }
