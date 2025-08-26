@@ -1,0 +1,2 @@
+vars:
+  - BASIC_VAR: 'defined in base'

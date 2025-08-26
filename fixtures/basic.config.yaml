@@ -1,0 +1,13 @@
+version: v0
+
+key:
+  via: 'echo my_key_value'
+
+sources:
+  local:
+    - basic/base.yaml
+    - basic/local.yaml
+    - basic/override.yaml
+  dev:
+    - basic/base.yaml
+    - basic/dev.yaml
