@@ -1,6 +1,7 @@
 import z from 'zod';
 
 import { getFormatRegex } from '../../../util/formats';
+import { ENV_VAR_NAME_PATTERN } from '../../../constants';
 
 export const STATIC_FORMATS = ['url', 'iso8601', 'email', 'ipv4', 'ipv6', 'uuid', 'ulid'] as const;
 export const INTEGER_MODIFIED_FORMATS = ['string', 'base64', 'hex', 'integer'] as const;
@@ -23,8 +24,9 @@ const baseVar = z.object({
 export default z.object({
   version: z.literal('v0').optional(),
   vars: z.record(
-    z.string(),
+    z.string().regex(new RegExp(`^${ENV_VAR_NAME_PATTERN}$`)),
     z.union([
+      z.string(),
       baseVar.extend({
         value: z.string(),
       }),
