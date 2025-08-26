@@ -4,20 +4,20 @@ import { program } from 'commander';
 import { compileCommandHandler } from './commands/compile';
 import GlobalOptionsSchema from './GlobalOptionsSchema';
 import GlobalCommand from './GlobalCommand';
+import output from './util/output';
 
 program
   .name('repoenv')
   .version('0.1.0')
-  .option('-v, --verbose', 'extra logs')
+  .option('-v, --verbose', 'increase verbosity', (_, previous: number) => previous + 1, 0)
   .option('-q, --quiet', 'no logs')
-  .option('--color / --no-color', 'colorful logs');
+  .option('--no-color', 'disable colorful logs');
 
-program.hook('preAction', ({ error }, command) => {
+program.hook('preAction', (_, command) => {
   const opts = GlobalOptionsSchema.parse(program.opts());
 
-  if (opts.verbose && opts.quiet) {
-    error('Choose either --verbose or --quiet (not both).');
-  }
+  output.setColor(opts.color);
+  output.setCalculatedLevel({ quiet: opts.quiet, verbose: opts.verbose });
 
   (command as GlobalCommand).globals = opts;
 });
