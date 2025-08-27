@@ -1,5 +1,5 @@
 import z from 'zod';
-import VariablesSchema from '../schemas/variables';
+import VariablesSchema from '@/schemas/variables';
 
 type Variables = z.infer<typeof VariablesSchema>;
 

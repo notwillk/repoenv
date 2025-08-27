@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import CommandSubstitutionError from '../errors/CommandSubstitutionError';
+import CommandSubstitutionError from '@/errors/CommandSubstitutionError';
 
 type Options = {
   command: string;

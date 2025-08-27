@@ -1,9 +1,10 @@
 import path from 'node:path';
 
-import { EnvVars } from '../../types/EnvVars';
-import VariablesSchema from '../../schemas/variables';
-import readFile from '../readFile';
-import getDerivationOrder from '../getDerivationOrder';
+import { EnvVars } from '@/types/EnvVars';
+import VariablesSchema from '@/schemas/variables';
+import readFile from '@/util/readFile';
+import getDerivationOrder from '@/util/getDerivationOrder';
+
 import processVariable from './processVariable';
 import filterVariables from './filterVariables';
 

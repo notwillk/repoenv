@@ -1,12 +1,12 @@
 import 'source-map-support/register';
 import { program } from 'commander';
 
-import { compileCommandHandler } from './commands/compile';
-import GlobalOptionsSchema from './GlobalOptionsSchema';
-import GlobalCommand from './GlobalCommand';
-import output from './util/output';
-import { getGitRoot } from './util/git';
-import config from './util/config';
+import { compileCommandHandler } from '@/commands/compile';
+import GlobalOptionsSchema from '@/GlobalOptionsSchema';
+import GlobalCommand from '@/GlobalCommand';
+import output from '@/util/output';
+import { getGitRoot } from '@/util/git';
+import config from '@/util/config';
 
 program
   .name('repoenv')

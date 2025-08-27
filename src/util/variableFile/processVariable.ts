@@ -1,6 +1,6 @@
 import { env } from 'string-env-interpolation';
 
-import { EnvVars } from '../../types/EnvVars';
+import { EnvVars } from '@/types/EnvVars';
 import {
   isPlainStringVariableDefinition,
   isValueVariableDefinition,
@@ -8,9 +8,9 @@ import {
   isSubstitutionVariableDefinition,
   isEncryptedVariableDefinition,
   VariableDefinition,
-} from '../../types/Variables';
-import getSubstitutedValue from '../getSubstitutedValue';
-import { decrypt } from '../crypto';
+} from '@/types/Variables';
+import getSubstitutedValue from '@/util/getSubstitutedValue';
+import { decrypt } from '@/util/crypto';
 
 type Options = {
   def: VariableDefinition;

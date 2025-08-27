@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import { z } from 'zod';
 import * as yaml from 'yaml';
 
-import output from './output';
+import output from '@/util/output';
 
 function readOrThrow(filePath: string): string {
   try {

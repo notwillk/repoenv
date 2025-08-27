@@ -1,7 +1,7 @@
 import z from 'zod';
 
-import { getFormatRegex } from '../../../util/formats';
-import { ENV_VAR_NAME_PATTERN } from '../../../constants';
+import { getFormatRegex } from '@/util/formats';
+import { ENV_VAR_NAME_PATTERN } from '@/constants';
 
 export const STATIC_FORMATS = ['url', 'iso8601', 'email', 'ipv4', 'ipv6', 'uuid', 'ulid'] as const;
 export const INTEGER_MODIFIED_FORMATS = ['string', 'base64', 'hex', 'integer'] as const;

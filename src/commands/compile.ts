@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import GlobalCommand from '../GlobalCommand';
-import output from '../util/output';
+import GlobalCommand from '@/GlobalCommand';
+import output from '@/util/output';
 
 const OptionsSchema = z.object({
   service: z.string().optional(),

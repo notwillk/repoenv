@@ -1,8 +1,8 @@
 import z from 'zod';
 import toposort from 'toposort';
 
-import VariablesSchema from '../schemas/variables';
-import extractVars from './extractVars';
+import VariablesSchema from '@/schemas/variables';
+import extractVars from '@/util/extractVars';
 
 export function getDerivationDependencies(
   vars: z.infer<typeof VariablesSchema>,

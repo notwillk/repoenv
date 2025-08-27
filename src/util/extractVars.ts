@@ -1,4 +1,4 @@
-import { ENV_VAR_NAME_PATTERN } from '../constants';
+import { ENV_VAR_NAME_PATTERN } from '@/constants';
 
 export default function extractVars(input: string): string[] {
   const regex = new RegExp(`\\$(${ENV_VAR_NAME_PATTERN})`, 'g');
