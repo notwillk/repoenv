@@ -1,3 +1,6 @@
+import path from 'node:path';
+import { env } from 'string-env-interpolation';
+
 import { EnvVars } from '../types/EnvVars';
 import VariablesSchema from '../schemas/variables';
 import readFile from './readFile';
@@ -9,7 +12,6 @@ import {
   isSubstitutionVariableDefinition,
   isEncryptedVariableDefinition,
 } from '../types/Variables';
-import getDerivedValue from './getDerivedValue';
 import getSubstitutedValue from './getSubstitutedValue';
 import { decrypt } from './crypto';
 
@@ -34,11 +36,12 @@ export default function processVariableFile({
       const { value } = variableDefinition;
       envVars[varName] = value;
     } else if (isDerivedVariableDefinition(variableDefinition)) {
-      envVars[varName] = getDerivedValue(variableDefinition.derived_value, envVars);
+      envVars[varName] = env(variableDefinition.derived_value, envVars);
     } else if (isSubstitutionVariableDefinition(variableDefinition)) {
-      envVars[varName] = getSubstitutedValue(
-        getDerivedValue(variableDefinition.substitution, envVars),
-      );
+      envVars[varName] = getSubstitutedValue({
+        command: env(variableDefinition.substitution, envVars),
+        cwd: path.dirname(path.resolve(filePath)),
+      });
     } else if (isEncryptedVariableDefinition(variableDefinition)) {
       envVars[varName] = decrypt(variableDefinition.encrypted, decryptionKey);
     } else {
