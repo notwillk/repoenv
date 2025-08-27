@@ -1,9 +1,9 @@
 import z from 'zod';
-import VariablesSchema from '@/schemas/variables';
+import SourceSchema from '@/schemas/source';
 
-type Variables = z.infer<typeof VariablesSchema>;
+type Source = z.infer<typeof SourceSchema>;
 
-export type VariableDefinition = Variables['vars'][string];
+export type VariableDefinition = Source['vars'][string];
 
 export function isPlainStringVariableDefinition(v: VariableDefinition): v is string {
   return typeof v === 'string';

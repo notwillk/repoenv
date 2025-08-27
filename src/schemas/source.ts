@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import v0 from './versions/variables/v0';
+import v0 from './versions/source/v0';
 
 const schemaVersions = [v0] as const;
 

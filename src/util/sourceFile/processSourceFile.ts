@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import { EnvVars } from '@/types/EnvVars';
-import VariablesSchema from '@/schemas/variables';
+import SourceSchema from '@/schemas/source';
 import readFile from '@/util/readFile';
 import getDerivationOrder from '@/util/getDerivationOrder';
 
@@ -10,19 +10,19 @@ import filterVariables from './filterVariables';
 
 type Options = { filePath: string; incomingEnvVars?: EnvVars; decryptionKey: string };
 
-export default function processVariableFile({
+export default function processSourceFile({
   filePath,
   decryptionKey,
   incomingEnvVars = {},
 }: Options) {
   const envVars: EnvVars = { ...incomingEnvVars };
 
-  const variables = readFile(filePath, VariablesSchema);
-  const derivationOrder = getDerivationOrder(variables);
+  const source = readFile(filePath, SourceSchema);
+  const derivationOrder = getDerivationOrder(source);
 
   derivationOrder.forEach((varName) => {
     const value = processVariable({
-      def: variables.vars[varName],
+      def: source.vars[varName],
       cwd: path.dirname(path.resolve(filePath)),
       decryptionKey,
       envVars,
@@ -31,9 +31,9 @@ export default function processVariableFile({
     envVars[varName] = value;
   });
 
-  return variables.filter
+  return source.filter
     ? filterVariables({
-        filters: variables.filter,
+        filters: source.filter,
         envVars,
       })
     : envVars;

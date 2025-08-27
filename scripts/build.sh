@@ -27,8 +27,8 @@ if [[ "${1:-}" == "--watch" ]]; then
   command_names+=("schema:config")
   command_colors+=("magenta")
 
-  commands+=("npx nodemon --quiet --watch . --ext ts,tsx --exec 'pnpm run build:schema:variables'")
-  command_names+=("schema:variables")
+  commands+=("npx nodemon --quiet --watch . --ext ts,tsx --exec 'pnpm run build:schema:source'")
+  command_names+=("schema:source")
   command_colors+=("yellow")
 
   IFS=, names="${command_names[*]}"

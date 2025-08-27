@@ -12,9 +12,9 @@
   "scripts": {
     "build": "scripts/build.sh",
     "build:command": "tsup",
-    "build:schemas": "npm run build:schema:config && build:schema:variables",
+    "build:schemas": "npm run build:schema:config && build:schema:source",
     "build:schema:config": "tsx scripts/emitConfigSchema.ts > dist/config.schema.json",
-    "build:schema:variables": "tsx scripts/emitVariablesSchema.ts > dist/variables.schema.json",
+    "build:schema:source": "tsx scripts/emitSourceSchema.ts > dist/source.schema.json",
     "dev": "scripts/build.sh --watch",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
