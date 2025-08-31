@@ -3,6 +3,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always"
   },
+  "debug.terminal.clearBeforeReusing": true,
   "eslint.validate": ["typescript", "typescriptreact", "javascript"],
   "files.eol": "\n",
   "editor.defaultFormatter": "esbenp.prettier-vscode",

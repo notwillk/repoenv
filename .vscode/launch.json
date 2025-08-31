@@ -1,3 +1,4 @@
+// .vscode/launch.json
 {
   "version": "0.2.0",
   "configurations": [
@@ -8,7 +9,7 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "cwd": "${workspaceFolder}",
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "preLaunchTask": "npm install"
     }
   ]

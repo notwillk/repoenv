@@ -6,7 +6,11 @@
       "type": "shell",
       "command": "npm install",
       "group": "build",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "close": true
+      }
     }
   ]
 }
