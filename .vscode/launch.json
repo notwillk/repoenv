@@ -10,7 +10,8 @@
       "runtimeArgs": ["run", "dev"],
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
-      "preLaunchTask": "npm install"
+      "preLaunchTask": "npm install",
+      "postDebugTask": "npm unlink repoenv"
     }
   ]
 }

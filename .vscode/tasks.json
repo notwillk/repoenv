@@ -11,6 +11,16 @@
         "reveal": "always",
         "close": true
       }
+    },
+    {
+      "label": "npm unlink repoenv",
+      "type": "shell",
+      "command": "npm unlink -g repoenv --silent --loglevel=error",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "close": true
+      }
     }
   ]
 }
