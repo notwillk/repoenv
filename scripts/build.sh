@@ -13,7 +13,7 @@ fi
 
 if [[ "${1:-}" == "--watch" ]]; then
   npm link --silent --no-audit --no-fund --loglevel=error
-  trap 'npm unlink -g repoenv  --silent --loglevel=error' EXIT
+  trap 'npm unlink -g repoenv --silent --loglevel=error || true' EXIT SIGTERM SIGHUP SIGINT
 
   commands=()
   command_names=()
