@@ -10,11 +10,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm run build:command && build:schema",
+    "build": "npm run build:command && npm run build:schema:config && npm run build:schema:source",
     "build:command": "tsup",
-    "build:schemas": "npm run build:schema:config && build:schema:source",
     "build:schema:config": "tsx scripts/emitConfigSchema.ts > dist/config.schema.json",
     "build:schema:source": "tsx scripts/emitSourceSchema.ts > dist/source.schema.json",
+    "clean": "rm -rf dist",
+    "clean:deep": "rm -rf dist node_modules",
     "dev": "concurrently --kill-others --kill-signal SIGTERM --names 'cli','config schema','source schema' 'npm run dev:command:pre && (npm run dev:command || true) && npm run dev:command:post' 'npm run dev:schema:config' 'npm run dev:schema:source'",
     "dev:command": "tsup --watch",
     "dev:command:post": "npm unlink -g repoenv --silent --loglevel=error || true",
@@ -28,7 +29,8 @@
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
     "coverage:open": "vite-node -e 'import(\"open\").then(m=>m.default(\"coverage/index.html\"))' || true",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "pretest": "npm run build:command"
   },
   "engines": {
     "node": ">=18"
@@ -46,6 +48,7 @@
     "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-vitest": "^0.5.4",
+    "execa": "^9.6.0",
     "prettier": "^3.6.2",
     "tsup": "^8.5.0",
     "tsx": "^4.20.5",
