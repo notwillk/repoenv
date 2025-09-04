@@ -2,20 +2,20 @@ import fs from 'node:fs';
 import { z } from 'zod';
 import * as yaml from 'yaml';
 
-import output from '@/util/output';
+import logger from '@/util/logger';
 
 function readOrThrow(filePath: string): string {
   try {
     return fs.readFileSync(filePath, 'utf8');
   } catch (err) {
-    output.error(({ red }) => `Failed to read file: ${red(filePath)}`);
+    logger.error(({ red }) => `Failed to read file: ${red(filePath)}`);
     throw err;
   }
 }
 
-export default function readFile<T extends z.ZodTypeAny>(filePath: string, schema: T): z.output<T> {
+export default function readFile<T extends z.ZodTypeAny>(filePath: string, schema: T): z.logger<T> {
   if (!fs.existsSync(filePath)) {
-    output.error(({ red }) => `File not found: ${red(filePath)}`);
+    logger.error(({ red }) => `File not found: ${red(filePath)}`);
     throw new Error(`File not found: ${filePath}`);
   }
 

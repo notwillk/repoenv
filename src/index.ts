@@ -4,7 +4,7 @@ import { program } from 'commander';
 import { compileCommandHandler } from '@/commands/compile';
 import GlobalOptionsSchema from '@/GlobalOptionsSchema';
 import GlobalCommand from '@/GlobalCommand';
-import output from '@/util/output';
+import logger from '@/util/logger';
 import { getGitRoot } from '@/util/git';
 import config from '@/util/config';
 
@@ -19,10 +19,10 @@ program
 program.hook('preAction', (_, command) => {
   const opts = GlobalOptionsSchema.parse(program.opts());
 
-  output.setColor(opts.color);
-  output.setCalculatedLevel({ quiet: opts.quiet, verbose: opts.verbose });
+  logger.setColor(opts.color);
+  logger.setCalculatedLevel({ quiet: opts.quiet, verbose: opts.verbose });
 
-  output.debug(({ cyan }) => `Repo root: ${cyan(getGitRoot())}`);
+  logger.debug(({ cyan }) => `Repo root: ${cyan(getGitRoot())}`);
 
   config.load(opts.config);
 

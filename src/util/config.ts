@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { getGitRoot } from '@/util/git';
 import ConfigSchema from '@/schemas/config';
-import output from '@/util/output';
+import logger from '@/util/logger';
 import { CONFIG_FILENAME } from '@/constants';
 import readFile from '@/util/readFile';
 
@@ -16,7 +16,7 @@ class Config {
       ? path.resolve(process.cwd(), env)
       : path.join(getGitRoot()!, CONFIG_FILENAME);
 
-    output.debug(`Config file: ${configPath}`);
+    logger.debug(`Config file: ${configPath}`);
 
     this.data = readFile(configPath, ConfigSchema);
     this.configPath = configPath;

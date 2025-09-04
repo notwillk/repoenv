@@ -13,7 +13,7 @@ function levelCompare(a: Level, b: Level) {
   return LEVELS.indexOf(a) - LEVELS.indexOf(b);
 }
 
-class Output {
+class Logger {
   _level: Level = 'warn';
   _chalk: ChalkInstance = new Chalk({ level: 3 });
   _color: boolean = true;
@@ -67,22 +67,34 @@ class Output {
       const out = args[0](this._chalk);
       if (Array.isArray(out)) {
         const [msg, meta] = out;
-        typeof msg === 'string' ? printStr(msg) : printObj(msg);
+        if (typeof msg === 'string') {
+          printStr(msg);
+        } else {
+          printObj(msg);
+        }
         if (this._level === 'debug' && meta !== undefined) {
           printObj(meta);
         }
       } else {
-        typeof out === 'string' ? printStr(out) : printObj(out);
+        if (typeof out === 'string') {
+          printStr(out);
+        } else {
+          printObj(out);
+        }
       }
       return;
     }
 
     const [msg, meta] = args;
-    typeof msg === 'string' ? printStr(msg) : printObj(msg);
+    if (typeof msg === 'string') {
+      printStr(msg);
+    } else {
+      printObj(msg);
+    }
     if (this._level === 'debug' && meta !== undefined) {
       printObj(meta);
     }
   }
 }
 
-export default new Output();
+export default new Logger();

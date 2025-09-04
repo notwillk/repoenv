@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import GlobalCommand from '@/GlobalCommand';
-import output from '@/util/output';
+import logger from '@/util/logger';
 
 const OptionsSchema = z.object({
   service: z.string().optional(),
@@ -14,7 +14,7 @@ export function compileCommandHandler(
   command: GlobalCommand,
 ): void | Promise<void> {
   const options = OptionsSchema.parse(maybeOptions);
-  output.debug('Options', options);
-  output.debug('Globals', command.globals);
-  output.info(({ yellow }) => yellow('Compile command scaffold'));
+  logger.debug('Options', options);
+  logger.debug('Globals', command.globals);
+  logger.info(({ yellow }) => yellow('Compile command scaffold'));
 }
