@@ -31,9 +31,6 @@ export default z.object({
         value: z.string(),
       }),
       baseVar.extend({
-        derived_value: z.string(),
-      }),
-      baseVar.extend({
         substitution: z.string(),
       }),
       baseVar.extend({

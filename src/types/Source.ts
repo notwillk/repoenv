@@ -15,12 +15,6 @@ export function isValueVariableDefinition(
   return v.hasOwnProperty('value');
 }
 
-export function isDerivedVariableDefinition(
-  v: VariableDefinition,
-): v is Extract<VariableDefinition, { derived_value: string }> {
-  return v.hasOwnProperty('derived_value');
-}
-
 export function isSubstitutionVariableDefinition(
   v: VariableDefinition,
 ): v is Extract<VariableDefinition, { substitution: string }> {

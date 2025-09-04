@@ -124,7 +124,7 @@ sources:
 vars:
   - BASIC_VAR: 'a string, plaintext, unvalidated, unredacted'
   - DERIVED_VAR:
-    derived_value: 'something about $BASIC_VAR'
+    value: 'something about $BASIC_VAR'
   - SUBSTITUTED_VAR:
     substitution: 'some command to fetch the value'
   - PLAINTEXT_FANCY_VAR:
@@ -184,6 +184,6 @@ Formats:
 
 Variable dependencies:
 
-- Within a file, the dependency graph of variables is calculated based on `derived_value` and `substitution` values (i.e. `$<varname>`).
+- Within a file, the dependency graph of variables is calculated based on `value` and `substitution` values (i.e. `$<varname>`).
 - Errors with this are caught via lint
 - Errors prevent these values from being calculated

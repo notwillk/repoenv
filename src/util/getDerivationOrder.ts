@@ -7,7 +7,7 @@ import extractVars from '@/util/extractVars';
 export function getDerivationDependencies(
   source: z.infer<typeof SourceSchema>,
 ): Array<[string, string | undefined]> {
-  const propertiesWithPossibleDependencies = ['derived_value', 'substitution'] as const;
+  const propertiesWithPossibleDependencies = ['value', 'substitution'] as const;
 
   const edges: Array<[string, string | undefined]> = [];
   for (const [varName, varDef] of Object.entries(source)) {

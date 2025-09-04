@@ -4,7 +4,6 @@ import { EnvVars } from '@/types/EnvVars';
 import {
   isPlainStringVariableDefinition,
   isValueVariableDefinition,
-  isDerivedVariableDefinition,
   isSubstitutionVariableDefinition,
   isEncryptedVariableDefinition,
   VariableDefinition,
@@ -23,10 +22,7 @@ export default function processVariable({ def, cwd, decryptionKey, envVars }: Op
   if (isPlainStringVariableDefinition(def)) {
     return def;
   } else if (isValueVariableDefinition(def)) {
-    const { value } = def;
-    return value;
-  } else if (isDerivedVariableDefinition(def)) {
-    return env(def.derived_value, envVars);
+    return env(def.value, envVars);
   } else if (isSubstitutionVariableDefinition(def)) {
     return getSubstitutedValue({
       command: env(def.substitution, envVars),
