@@ -15,7 +15,6 @@ function readOrThrow(filePath: string): string {
 
 export default function readFile<T extends z.ZodTypeAny>(filePath: string, schema: T): z.logger<T> {
   if (!fs.existsSync(filePath)) {
-    logger.error(({ red }) => `File not found: ${red(filePath)}`);
     throw new Error(`File not found: ${filePath}`);
   }
 

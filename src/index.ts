@@ -7,6 +7,7 @@ import GlobalCommand from '@/GlobalCommand';
 import logger from '@/util/logger';
 import { getGitRoot } from '@/util/git';
 import config from '@/util/config';
+import { exit } from 'node:process';
 
 program
   .name('repoenv')
@@ -38,4 +39,9 @@ program
   .option('--keys-only', 'show only keys, no values', false)
   .action(compileCommandHandler);
 
-program.parse();
+try {
+  program.parse();
+} catch (err) {
+  logger.error((err as Error).message);
+  exit(1);
+}
