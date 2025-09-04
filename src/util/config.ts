@@ -1,4 +1,5 @@
 import path from 'node:path';
+import fs from 'node:fs';
 import { z } from 'zod';
 
 import { getGitRoot } from '@/util/git';
@@ -12,13 +13,20 @@ class Config {
   data: z.infer<typeof ConfigSchema> | null = null;
 
   load(env?: string): void {
-    const configPath = env
-      ? path.resolve(process.cwd(), env)
-      : path.join(getGitRoot()!, CONFIG_FILENAME);
+    const useDefaultConfigFile = !env;
+
+    const configPath = useDefaultConfigFile
+      ? path.join(getGitRoot()!, CONFIG_FILENAME)
+      : path.resolve(process.cwd(), env);
 
     logger.debug(`Config file: ${configPath}`);
 
-    this.data = readFile(configPath, ConfigSchema);
+    if (!useDefaultConfigFile || fs.existsSync(configPath)) {
+      this.data = readFile(configPath, ConfigSchema);
+    } else {
+      logger.warn(`Config file not found`);
+    }
+
     this.configPath = configPath;
   }
 }
