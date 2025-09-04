@@ -15,6 +15,7 @@ program
   .option('-v, --verbose', 'increase verbosity', (_, previous: number) => previous + 1, 0)
   .option('-q, --quiet', 'no logs')
   .option('--no-color', 'disable colorful logs')
+  .option('--json', 'output as JSON', false)
   .option('-c, --config <path>', 'config file path');
 
 program.hook('preAction', (_, command) => {
@@ -33,7 +34,7 @@ program.hook('preAction', (_, command) => {
 program
   .command('compile')
   .description("compile service's env vars")
-  .option('-s, --service <service>', 'service name')
+  .argument('[service]', 'env file to compile')
   .option('--redact', 'redact secret values', true)
   .option('--no-redact', 'do not redact secret values')
   .option('--keys-only', 'show only keys, no values', false)

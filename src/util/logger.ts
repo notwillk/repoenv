@@ -59,9 +59,9 @@ class Logger {
   protected log(level: Level, ...args: LogArgs) {
     if (levelCompare(level, this._level) < 0) return;
 
-    const printStr = (s: string) => console.log(s);
+    const printStr = (s: string) => console.error(s);
     const printObj = (o: unknown) =>
-      console.log(util.inspect(o, { colors: this._color, depth: null, compact: false }));
+      console.error(util.inspect(o, { colors: this._color, depth: null, compact: false }));
 
     if (typeof args[0] === 'function') {
       const out = args[0](this._chalk);

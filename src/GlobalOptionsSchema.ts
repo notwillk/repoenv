@@ -4,6 +4,7 @@ const GlobalOptionsSchema = z.object({
   verbose: z.number().optional().default(0),
   quiet: z.boolean().optional().default(false),
   color: z.boolean().optional().default(true),
+  json: z.boolean().optional().default(true),
   config: z.string().optional(),
 });
 
