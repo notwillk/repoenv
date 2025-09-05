@@ -81,4 +81,32 @@ describe('CLI#compile command', () => {
 
     expect(parsed).toMatchObject({ FOO: 'bar', BAR: 'should appear' });
   });
+
+  it('outputs foo and derived bar', async () => {
+    const dir = temporaryDirectory();
+    const file = join(dir, 'env.yaml');
+    const envVar: z.infer<typeof SourceSchema> = {
+      vars: { BAR: { value: '-->${FOO}<--' } },
+      filter: ['FOO', 'BAR'],
+    };
+
+    writeFileSync(file, stringify(envVar), 'utf8');
+
+    const { stdout, exitCode } = await execa(
+      'node',
+      [CLI_PATH, '--json', '-vvv', 'compile', file],
+      {
+        reject: false,
+        env: { FOO: 'bar' },
+      },
+    );
+    expect(exitCode).toBe(0);
+
+    let parsed;
+    expect(() => {
+      parsed = JSON.parse(stdout.trim());
+    }).not.toThrow();
+
+    expect(parsed).toMatchObject({ FOO: 'bar', BAR: '-->bar<--' });
+  });
 });
