@@ -1,1 +1,1 @@
-export type EnvVars = Record<string, string>;
+export type EnvVars = Record<string, string | undefined>;

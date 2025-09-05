@@ -7,7 +7,7 @@ import {
   isSubstitutionVariableDefinition,
   isEncryptedVariableDefinition,
   VariableDefinition,
-} from '@/types/Variables';
+} from '@/types/Source';
 import getSubstitutedValue from '@/util/getSubstitutedValue';
 import { decrypt } from '@/util/crypto';
 

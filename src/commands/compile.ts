@@ -3,6 +3,8 @@ import { z } from 'zod';
 import GlobalCommand from '@/GlobalCommand';
 import logger from '@/util/logger';
 import output from '@/util/output';
+import { EnvVars } from '@/types/EnvVars';
+import processSourceFile from '@/util/sourceFile/processSourceFile';
 
 const OptionsSchema = z.object({
   service: z.string().optional(),
@@ -19,8 +21,15 @@ export function compileCommandHandler(
   logger.debug('Options', options);
   logger.debug('Globals', command.globals);
   logger.info(({ yellow }) => yellow('Compile command scaffold'));
-  if (!filePath) {
-    const format = command.globals.json ? 'json' : 'dotenv';
-    output(process.env, { format });
-  }
+
+  const envVars = filePath
+    ? processSourceFile({
+        filePath,
+        decryptionKey: 'TBD',
+        incomingEnvVars: process.env,
+      })
+    : process.env;
+
+  const format = command.globals.json ? 'json' : 'dotenv';
+  output(envVars, { format });
 }

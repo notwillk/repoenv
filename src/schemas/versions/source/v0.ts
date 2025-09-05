@@ -23,21 +23,23 @@ const baseVar = z.object({
 
 export default z.object({
   version: z.literal('v0').optional(),
-  vars: z.record(
-    z.string().regex(new RegExp(`^${ENV_VAR_NAME_PATTERN}$`)),
-    z.union([
-      z.string(),
-      baseVar.extend({
-        value: z.string(),
-      }),
-      baseVar.extend({
-        substitution: z.string(),
-      }),
-      baseVar.extend({
-        encrypted: z.string(),
-      }),
-    ]),
-  ),
+  vars: z
+    .record(
+      z.string().regex(new RegExp(`^${ENV_VAR_NAME_PATTERN}$`)),
+      z.union([
+        z.string(),
+        baseVar.extend({
+          value: z.string(),
+        }),
+        baseVar.extend({
+          substitution: z.string(),
+        }),
+        baseVar.extend({
+          encrypted: z.string(),
+        }),
+      ]),
+    )
+    .optional(),
   filter: z.array(z.string()).optional(),
   validator: z.string().optional(),
 });

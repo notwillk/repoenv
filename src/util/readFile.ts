@@ -13,7 +13,7 @@ function readOrThrow(filePath: string): string {
   }
 }
 
-export default function readFile<T extends z.ZodTypeAny>(filePath: string, schema: T): z.logger<T> {
+export default function readFile<T extends z.ZodTypeAny>(filePath: string, schema: T): z.output<T> {
   if (!fs.existsSync(filePath)) {
     throw new Error(`File not found: ${filePath}`);
   }
