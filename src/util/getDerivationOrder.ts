@@ -1,7 +1,7 @@
 import toposort from 'toposort';
 
 import extractVars from '@/util/extractVars';
-import { Source } from '@/types/Source';
+import { Source } from '@/schemas/source';
 
 export function getDerivationDependencies(source: Source): Array<[string, string | undefined]> {
   const propertiesWithPossibleDependencies = ['value', 'substitution'] as const;

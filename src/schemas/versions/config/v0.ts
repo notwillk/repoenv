@@ -1,20 +1,9 @@
 import z from 'zod';
-
-const KeySchema = z.union([
-  z.object({
-    var_name: z.string(),
-  }),
-  z.object({
-    substitution: z.string(),
-  }),
-]);
+import { variablesSchema } from '../source/v0';
 
 export default z.object({
   version: z.literal('v0').optional(),
-  keys: z.object({
-    read_write: KeySchema,
-    read_only: KeySchema.optional(),
-  }),
-  redact_secrets: z.boolean().optional().default(true),
+  inbound_filter: z.array(z.string()).optional(),
+  vars: variablesSchema.optional().default({}),
   sources: z.record(z.string(), z.array(z.string())),
 });

@@ -5,7 +5,7 @@ import { CLI_PATH } from './constants';
 import { join } from 'node:path';
 import { writeFileSync } from 'node:fs';
 import { stringify } from 'yaml';
-import { Source } from '@/types/Source';
+import { Source } from '@/schemas/source';
 
 describe('CLI#compile command', () => {
   describe('no file given', () => {
