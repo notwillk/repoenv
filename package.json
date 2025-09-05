@@ -22,6 +22,8 @@
     "dev:command:pre": "npm link --silent --no-audit --no-fund --loglevel=error",
     "dev:schema:config": "nodemon --quiet --signal SIGTERM --watch . --ext ts,tsx --exec 'pnpm run build:schema:config'",
     "dev:schema:source": "nodemon --quiet --signal SIGTERM --watch . --ext ts,tsx --exec 'pnpm run build:schema:source'",
+    "static": "npm run lint && npm run typecheck",
+    "typecheck": "npx tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write .",

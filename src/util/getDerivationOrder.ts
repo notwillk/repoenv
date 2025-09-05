@@ -1,12 +1,9 @@
-import z from 'zod';
 import toposort from 'toposort';
 
-import SourceSchema from '@/schemas/source';
 import extractVars from '@/util/extractVars';
+import { Source } from '@/types/Source';
 
-export function getDerivationDependencies(
-  source: z.infer<typeof SourceSchema>,
-): Array<[string, string | undefined]> {
+export function getDerivationDependencies(source: Source): Array<[string, string | undefined]> {
   const propertiesWithPossibleDependencies = ['value', 'substitution'] as const;
 
   const edges: Array<[string, string | undefined]> = [];
@@ -31,7 +28,7 @@ export function getDerivationDependencies(
   return edges;
 }
 
-export default function getDerivationOrder(source: z.infer<typeof SourceSchema>): string[] {
+export default function getDerivationOrder(source: Source): string[] {
   const edges = getDerivationDependencies(source);
   return toposort(edges);
 }

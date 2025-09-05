@@ -1,7 +1,7 @@
 import z from 'zod';
 import SourceSchema from '@/schemas/source';
 
-type Source = z.infer<typeof SourceSchema>;
+export type Source = z.infer<typeof SourceSchema>;
 
 export type VariableDefinition = Source['vars'][string];
 

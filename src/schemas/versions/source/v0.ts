@@ -39,7 +39,8 @@ export default z.object({
         }),
       ]),
     )
-    .optional(),
+    .optional()
+    .default({}),
   filter: z.array(z.string()).optional(),
   validator: z.string().optional(),
 });

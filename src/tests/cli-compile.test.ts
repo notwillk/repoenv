@@ -5,8 +5,7 @@ import { CLI_PATH } from './constants';
 import { join } from 'node:path';
 import { writeFileSync } from 'node:fs';
 import { stringify } from 'yaml';
-import SourceSchema from '@/schemas/source';
-import z from 'zod';
+import { Source } from '@/types/Source';
 
 describe('CLI#compile command', () => {
   describe('no file given', () => {
@@ -40,7 +39,8 @@ describe('CLI#compile command', () => {
   it('outputs only foo with only foo filter', async () => {
     const dir = temporaryDirectory();
     const file = join(dir, 'env.yaml');
-    const envVar: z.infer<typeof SourceSchema> = {
+    const envVar: Source = {
+      vars: {},
       filter: ['FOO'],
     };
 
@@ -57,7 +57,7 @@ describe('CLI#compile command', () => {
   it('outputs foo and bar', async () => {
     const dir = temporaryDirectory();
     const file = join(dir, 'env.yaml');
-    const envVar: z.infer<typeof SourceSchema> = {
+    const envVar: Source = {
       vars: { BAR: 'should appear' },
       filter: ['FOO', 'BAR'],
     };
@@ -85,7 +85,7 @@ describe('CLI#compile command', () => {
   it('outputs foo and derived bar', async () => {
     const dir = temporaryDirectory();
     const file = join(dir, 'env.yaml');
-    const envVar: z.infer<typeof SourceSchema> = {
+    const envVar: Source = {
       vars: { BAR: { value: '-->${FOO}<--' } },
       filter: ['FOO', 'BAR'],
     };
@@ -113,7 +113,7 @@ describe('CLI#compile command', () => {
   it('outputs foo and bar keys only', async () => {
     const dir = temporaryDirectory();
     const file = join(dir, 'env.yaml');
-    const envVar: z.infer<typeof SourceSchema> = {
+    const envVar: Source = {
       vars: { BAR: { value: 'boop' } },
       filter: ['FOO', 'BAR'],
     };
