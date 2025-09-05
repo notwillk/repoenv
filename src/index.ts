@@ -35,8 +35,6 @@ program
   .command('compile')
   .description("compile service's env vars")
   .argument('[service]', 'env file to compile')
-  .option('--redact', 'redact secret values', true)
-  .option('--no-redact', 'do not redact secret values')
   .option('--keys-only', 'show only keys, no values', false)
   .action(compileCommandHandler);
 

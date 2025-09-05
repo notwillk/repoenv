@@ -6,8 +6,6 @@ import output from '@/util/output';
 import processSourceFile from '@/util/sourceFile/processSourceFile';
 
 const OptionsSchema = z.object({
-  service: z.string().optional(),
-  redact: z.boolean().optional().default(true),
   keysOnly: z.boolean().optional().default(false),
 });
 
@@ -19,7 +17,6 @@ export function compileCommandHandler(
   const options = OptionsSchema.parse(maybeOptions);
   logger.debug('Options', options);
   logger.debug('Globals', command.globals);
-  logger.info(({ yellow }) => yellow('Compile command scaffold'));
 
   const envVars = filePath
     ? processSourceFile({
@@ -30,5 +27,5 @@ export function compileCommandHandler(
     : process.env;
 
   const format = command.globals.json ? 'json' : 'dotenv';
-  output(envVars, { format });
+  output(envVars, { format, keysOnly: options.keysOnly });
 }

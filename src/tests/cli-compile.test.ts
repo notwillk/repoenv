@@ -109,4 +109,32 @@ describe('CLI#compile command', () => {
 
     expect(parsed).toMatchObject({ FOO: 'bar', BAR: '-->bar<--' });
   });
+
+  it('outputs foo and bar keys only', async () => {
+    const dir = temporaryDirectory();
+    const file = join(dir, 'env.yaml');
+    const envVar: z.infer<typeof SourceSchema> = {
+      vars: { BAR: { value: 'boop' } },
+      filter: ['FOO', 'BAR'],
+    };
+
+    writeFileSync(file, stringify(envVar), 'utf8');
+
+    const { stdout, exitCode } = await execa(
+      'node',
+      [CLI_PATH, '--json', '-vvv', 'compile', '--keys-only', file],
+      {
+        reject: false,
+        env: { FOO: 'bar' },
+      },
+    );
+    expect(exitCode).toBe(0);
+
+    let parsed;
+    expect(() => {
+      parsed = JSON.parse(stdout.trim());
+    }).not.toThrow();
+
+    expect(parsed).toMatchObject(['FOO', 'BAR']);
+  });
 });
