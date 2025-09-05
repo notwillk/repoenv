@@ -2,27 +2,44 @@ import toposort from 'toposort';
 
 import extractVars from '@/util/extractVars';
 import { Source } from '@/schemas/source';
+import {
+  isEncryptedVariable,
+  isSubstitutionVariable,
+  isValueVariable,
+} from '@/schemas/versions/variable';
+import logger from './logger';
 
 export function getDerivationDependencies(source: Source): Array<[string, string | undefined]> {
-  const propertiesWithPossibleDependencies = ['value', 'substitution'] as const;
-
   const edges: Array<[string, string | undefined]> = [];
-  for (const [varName, varDef] of Object.entries(source)) {
-    if (typeof varDef === 'string') {
-      edges.push([varName, undefined]);
-      continue;
+
+  for (const [varName, varDef] of Object.entries(source.vars || {})) {
+    let toExtract: string | null = null;
+    let singleDependency: string | null = null;
+
+    if (isSubstitutionVariable(varDef)) {
+      logger.debug(`Variable ${varName} is substitution based`);
+      toExtract = varDef.substitution;
+    } else if (isValueVariable(varDef)) {
+      logger.debug(`Variable ${varName} is value based`);
+      toExtract = varDef.value;
+    } else if (isEncryptedVariable(varDef)) {
+      logger.debug(`Variable ${varName} is encrypted`);
+      singleDependency = varDef.encryption_key_name;
     }
 
-    propertiesWithPossibleDependencies.forEach((prop) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (varDef.hasOwnProperty(prop) && (varDef as any)[prop]) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const extracted = extractVars((varDef as any)[prop] as string);
-        extracted.forEach((dep) => {
-          edges.push([varName, dep]);
-        });
-      }
-    });
+    if (singleDependency !== null) {
+      logger.debug(`Variable ${varName} has single dependency on ${singleDependency}`);
+      edges.push([varName, singleDependency]);
+    } else if (toExtract === null) {
+      logger.debug(`Variable ${varName} has no dependencies`);
+      edges.push([varName, undefined]);
+    } else {
+      const extracted = extractVars(toExtract);
+      logger.debug(`Variable ${varName} depends on ${extracted}`);
+      extracted.forEach((dep) => {
+        edges.push([varName, dep]);
+      });
+    }
   }
 
   return edges;
@@ -30,5 +47,5 @@ export function getDerivationDependencies(source: Source): Array<[string, string
 
 export default function getDerivationOrder(source: Source): string[] {
   const edges = getDerivationDependencies(source);
-  return toposort(edges);
+  return toposort(edges).filter(Boolean);
 }
