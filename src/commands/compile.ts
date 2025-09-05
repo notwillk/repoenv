@@ -3,7 +3,6 @@ import { z } from 'zod';
 import GlobalCommand from '@/GlobalCommand';
 import logger from '@/util/logger';
 import output from '@/util/output';
-import { EnvVars } from '@/types/EnvVars';
 import processSourceFile from '@/util/sourceFile/processSourceFile';
 
 const OptionsSchema = z.object({

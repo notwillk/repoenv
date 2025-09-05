@@ -17,7 +17,9 @@ export function getDerivationDependencies(
     }
 
     propertiesWithPossibleDependencies.forEach((prop) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (varDef.hasOwnProperty(prop) && (varDef as any)[prop]) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const extracted = extractVars((varDef as any)[prop] as string);
         extracted.forEach((dep) => {
           edges.push([varName, dep]);

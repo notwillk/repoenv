@@ -15,11 +15,20 @@ export default function getSubstitutedValue({ command, cwd }: Options): string {
       maxBuffer: 10 * 1024 * 1024, // 10MB, tweak as needed
     });
     return out.trimEnd();
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const mappedErr = err as Error & {
+      stderr?: unknown;
+      status?: unknown;
+      code?: unknown;
+    };
+
+    const stderr = (mappedErr?.stderr?.toString?.() ?? mappedErr?.message ?? '').trim();
+    const status = mappedErr?.status ?? mappedErr?.code;
+
     throw new CommandSubstitutionError({
       command,
-      stderr: (err?.stderr?.toString?.() ?? err?.message ?? '').trim(),
-      status: err?.status ?? err?.code,
+      stderr,
+      status,
     });
   }
 }
