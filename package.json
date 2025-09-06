@@ -31,7 +31,9 @@
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
     "coverage:open": "vite-node -e 'import(\"open\").then(m=>m.default(\"coverage/index.html\"))' || true",
+    "prepare": "husky install",
     "prepublishOnly": "npm run build",
+    "prepush": "npm run static && npm run test",
     "pretest": "npm run build:command"
   },
   "engines": {
@@ -51,6 +53,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-vitest": "^0.5.4",
     "execa": "^9.6.0",
+    "husky": "^8.0.0",
     "prettier": "^3.6.2",
     "tempy": "^3.1.0",
     "tsup": "^8.5.0",
