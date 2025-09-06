@@ -1,9 +1,6 @@
-import { env } from 'string-env-interpolation';
-
 import { EnvVars } from '@/types/EnvVars';
 
 import getSubstitutedValue from '@/util/getSubstitutedValue';
-import { decrypt } from '@/util/crypto';
 import {
   isEncryptedVariable,
   isPlainStringVariable,
@@ -11,6 +8,8 @@ import {
   isValueVariable,
   Variable,
 } from '@/schemas/versions/variable';
+import getEncryptedValue from './getEncryptedValue';
+import getValueVariable from './getValueVariable';
 
 type Options = {
   def: Variable;
@@ -22,20 +21,11 @@ export default function processVariable({ def, cwd, envVars }: Options): string 
   if (isPlainStringVariable(def)) {
     return def;
   } else if (isValueVariable(def)) {
-    return env(def.value, envVars);
+    return getValueVariable({ def, envVars });
   } else if (isSubstitutionVariable(def)) {
-    return getSubstitutedValue({
-      command: env(def.substitution, envVars),
-      cwd,
-    });
+    return getSubstitutedValue({ def, envVars, cwd });
   } else if (isEncryptedVariable(def)) {
-    const encryptionKey = envVars[def.encryption_key_name];
-
-    if (!encryptionKey) {
-      throw new Error(`Encryption key ${def.encryption_key_name} not found in environment`);
-    }
-
-    return decrypt(def.encrypted, encryptionKey);
+    return getEncryptedValue({ def, envVars });
   }
 
   throw new Error('Error parsing file');

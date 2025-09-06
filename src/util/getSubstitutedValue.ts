@@ -1,12 +1,18 @@
 import { execSync } from 'node:child_process';
 import CommandSubstitutionError from '@/errors/CommandSubstitutionError';
+import { SubstitutionVariable } from '@/schemas/versions/variable';
+import { EnvVars } from '@/types/EnvVars';
+import { env } from 'string-env-interpolation';
 
 type Options = {
-  command: string;
+  def: SubstitutionVariable;
   cwd: string;
+  envVars: EnvVars;
 };
 
-export default function getSubstitutedValue({ command, cwd }: Options): string {
+export default function getSubstitutedValue({ def, cwd, envVars }: Options): string {
+  const command = env(def.substitution, envVars);
+
   try {
     const out = execSync(command, {
       cwd,
