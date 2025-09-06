@@ -7,6 +7,7 @@ import { writeFileSync } from 'node:fs';
 import { stringify } from 'yaml';
 import { Source } from '@/schemas/source';
 import { Config } from '@/schemas/config';
+import { aes256GcmEncrypt, aes256GcmGenerateKey } from '../util/crypto';
 
 describe('CLI#compile command', () => {
   describe('no file given', () => {
@@ -211,5 +212,41 @@ describe('CLI#compile command', () => {
     }).not.toThrow();
 
     expect(parsed).toMatchObject({ ...CONFIG_ENV_VARS, ...ENV_VARS });
+  });
+
+  it('outputs decrypted value when env var is encrypted', async () => {
+    const ENCRYPTION_KEY = aes256GcmGenerateKey();
+    const plaintext = 'secret-bar';
+
+    const dir = temporaryDirectory();
+
+    const file = join(dir, 'env.yaml');
+    const envVar: Source = {
+      vars: {
+        BAR: {
+          encrypted: aes256GcmEncrypt({ plaintext, key: ENCRYPTION_KEY, encoding: 'base64' }),
+          encryption_algorithm: 'aes-256-gcm',
+          encryption_encoding: 'base64',
+          encryption_key_name: 'ENCRYPTION_KEY',
+        },
+      },
+      filter: ['BAR'],
+    };
+
+    writeFileSync(file, stringify(envVar), 'utf8');
+
+    const { stdout, exitCode } = await execa('node', [CLI_PATH, '--json', 'compile', file], {
+      reject: false,
+      env: { ENCRYPTION_KEY },
+    });
+
+    expect(exitCode).toBe(0);
+
+    let parsed;
+    expect(() => {
+      parsed = JSON.parse(stdout.trim());
+    }).not.toThrow();
+
+    expect(parsed).toMatchObject({ BAR: 'secret-bar' });
   });
 });
