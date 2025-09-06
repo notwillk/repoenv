@@ -7,6 +7,20 @@ export const STATIC_FORMATS = ['url', 'iso8601', 'email', 'ipv4', 'ipv6', 'uuid'
 export const INTEGER_MODIFIED_FORMATS = ['string', 'base64', 'hex', 'integer'] as const;
 export const FLOAT_MODIFIED_FORMATS = ['float'] as const;
 export const SUPPORTED_ENCRYPTION_ALGORITHMS = ['aes-256-gcm'] as const;
+export const SUPPORTED_ENCODINGS: BufferEncoding[] = [
+  'ascii',
+  'utf8',
+  'utf-8',
+  'utf16le',
+  'utf-16le',
+  'ucs2',
+  'ucs-2',
+  'base64',
+  'base64url',
+  'latin1',
+  'binary',
+  'hex',
+] as const;
 
 // const formatRexexp = getFormatRegex({
 //   staticFormats: STATIC_FORMATS,
@@ -37,7 +51,7 @@ export const substitutionVariableSchema = baseVar.extend({
 
 export const encryptedVariableSchema = baseVar.extend({
   encrypted: z.string(),
-  encryption_format: z.enum(['base64', 'hex']).optional().default('base64'),
+  encryption_encoding: z.enum(SUPPORTED_ENCODINGS).optional().default('base64'),
   encryption_key_name: z.string().optional().default('ENCRYPTION_KEY'),
   encryption_algorithm: z.enum(SUPPORTED_ENCRYPTION_ALGORITHMS).optional().default('aes-256-gcm'),
 });
