@@ -4,6 +4,9 @@ import GlobalCommand from '@/GlobalCommand';
 import logger from '@/util/logger';
 import output from '@/util/output';
 import processSourceFile from '@/util/sourceFile/processSourceFile';
+import config from '@/util/config';
+import filterVariables from '@/util/sourceFile/filterVariables';
+import mergeVariables from '@/util/mergeVariables';
 
 const OptionsSchema = z.object({
   keysOnly: z.boolean().optional().default(false),
@@ -18,13 +21,23 @@ export function compileCommandHandler(
   logger.debug('Options', options);
   logger.debug('Globals', command.globals);
 
+  const inbound_filter = config?.data?.inbound_filter;
+
+  const incomingEnvVars = inbound_filter
+    ? filterVariables({ envVars: process.env, filters: inbound_filter })
+    : process.env;
+
+  const sourceEnvVars =
+    config.data?.vars && config.configPath
+      ? mergeVariables({ incomingEnvVars, variables: config.data?.vars, cwd: config.configPath })
+      : incomingEnvVars;
+
   const envVars = filePath
     ? processSourceFile({
         filePath,
-        decryptionKey: 'TBD',
-        incomingEnvVars: process.env,
+        incomingEnvVars: sourceEnvVars,
       })
-    : process.env;
+    : sourceEnvVars;
 
   const format = command.globals.json ? 'json' : 'dotenv';
   output(envVars, { format, keysOnly: options.keysOnly });

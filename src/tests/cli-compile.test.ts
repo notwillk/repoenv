@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { writeFileSync } from 'node:fs';
 import { stringify } from 'yaml';
 import { Source } from '@/schemas/source';
+import { Config } from '@/schemas/config';
 
 describe('CLI#compile command', () => {
   describe('no file given', () => {
@@ -136,5 +137,79 @@ describe('CLI#compile command', () => {
     }).not.toThrow();
 
     expect(parsed).toMatchObject(['FOO', 'BAR']);
+  });
+
+  it('filters incoming env vars', async () => {
+    const GOOD_VAR = { FOO: 'should appear' };
+    const BAD_VAR = { BAR: 'should not appear' };
+
+    const dir = temporaryDirectory();
+    const sourceFile = join(dir, 'env.yaml');
+    const envVar: Source = {
+      vars: {},
+    };
+
+    writeFileSync(sourceFile, stringify(envVar), 'utf8');
+
+    const configFile = join(dir, 'config.yaml');
+    const configVar: Config = {
+      inbound_filter: Object.keys(GOOD_VAR),
+      vars: {},
+      sources: {},
+    };
+
+    writeFileSync(configFile, stringify(configVar), 'utf8');
+
+    const { stdout, exitCode } = await execa(
+      'node',
+      [CLI_PATH, '--json', '-vvv', '--config', configFile, 'compile', sourceFile],
+      {
+        reject: false,
+        env: { ...GOOD_VAR, ...BAD_VAR },
+      },
+    );
+
+    expect(exitCode).toBe(0);
+
+    let parsed;
+    expect(() => {
+      parsed = JSON.parse(stdout.trim());
+    }).not.toThrow();
+
+    expect(parsed).not.toMatchObject(BAD_VAR);
+    expect(parsed).toMatchObject(GOOD_VAR);
+  });
+
+  it('filters adds env vars from config file', async () => {
+    const ENV_VARS = { FOO: 'should appear' };
+    const CONFIG_ENV_VARS = { BAR: 'should also appear' };
+
+    const dir = temporaryDirectory();
+    const configFile = join(dir, 'config.yaml');
+    const configVar: Config = {
+      inbound_filter: Object.keys(ENV_VARS),
+      vars: CONFIG_ENV_VARS,
+      sources: {},
+    };
+
+    writeFileSync(configFile, stringify(configVar), 'utf8');
+
+    const { stdout, exitCode } = await execa(
+      'node',
+      [CLI_PATH, '--json', '-vvv', '--config', configFile, 'compile'],
+      {
+        reject: false,
+        env: ENV_VARS,
+      },
+    );
+
+    expect(exitCode).toBe(0);
+
+    let parsed;
+    expect(() => {
+      parsed = JSON.parse(stdout.trim());
+    }).not.toThrow();
+
+    expect(parsed).toMatchObject({ ...CONFIG_ENV_VARS, ...ENV_VARS });
   });
 });

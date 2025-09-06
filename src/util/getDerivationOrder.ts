@@ -1,18 +1,18 @@
 import toposort from 'toposort';
 
 import extractVars from '@/util/extractVars';
-import { Source } from '@/schemas/source';
 import {
   isEncryptedVariable,
   isSubstitutionVariable,
   isValueVariable,
 } from '@/schemas/versions/variable';
 import logger from './logger';
+import { Variables } from '@/schemas/versions/source/v0';
 
-export function getDerivationDependencies(source: Source): Array<[string, string | undefined]> {
+export function getDerivationDependencies(vars: Variables): Array<[string, string | undefined]> {
   const edges: Array<[string, string | undefined]> = [];
 
-  for (const [varName, varDef] of Object.entries(source.vars || {})) {
+  for (const [varName, varDef] of Object.entries(vars || {})) {
     let toExtract: string | null = null;
     let singleDependency: string | null = null;
 
@@ -45,7 +45,7 @@ export function getDerivationDependencies(source: Source): Array<[string, string
   return edges;
 }
 
-export default function getDerivationOrder(source: Source): string[] {
-  const edges = getDerivationDependencies(source);
+export default function getDerivationOrder(vars: Variables): string[] {
+  const edges = getDerivationDependencies(vars);
   return toposort(edges).filter(Boolean);
 }

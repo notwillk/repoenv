@@ -4,4 +4,8 @@ import v0 from './versions/config/v0';
 
 const schemaVersions = [v0] as const;
 
-export default z.discriminatedUnion('version', schemaVersions);
+const configSchema = z.discriminatedUnion('version', schemaVersions);
+
+export type Config = z.infer<typeof configSchema>;
+
+export default configSchema;

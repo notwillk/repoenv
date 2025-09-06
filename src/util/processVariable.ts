@@ -15,11 +15,10 @@ import {
 type Options = {
   def: Variable;
   cwd: string;
-  decryptionKey: string;
   envVars: EnvVars;
 };
 
-export default function processVariable({ def, cwd, decryptionKey, envVars }: Options): string {
+export default function processVariable({ def, cwd, envVars }: Options): string {
   if (isPlainStringVariable(def)) {
     return def;
   } else if (isValueVariable(def)) {
@@ -30,7 +29,13 @@ export default function processVariable({ def, cwd, decryptionKey, envVars }: Op
       cwd,
     });
   } else if (isEncryptedVariable(def)) {
-    return decrypt(def.encrypted, decryptionKey);
+    const encryptionKey = envVars[def.encryption_key_name];
+
+    if (!encryptionKey) {
+      throw new Error(`Encryption key ${def.encryption_key_name} not found in environment`);
+    }
+
+    return decrypt(def.encrypted, encryptionKey);
   }
 
   throw new Error('Error parsing file');

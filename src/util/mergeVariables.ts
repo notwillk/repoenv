@@ -1,26 +1,16 @@
-import path from 'node:path';
-
 import { EnvVars } from '@/types/EnvVars';
-import SourceSchema from '@/schemas/source';
-import readFile from '@/util/readFile';
 import getDerivationOrder from '@/util/getDerivationOrder';
-
-import processVariable from '../processVariable';
-import filterVariables from './filterVariables';
-import logger from '../logger';
+import processVariable from '@/util/processVariable';
+import logger from '@/util/logger';
 import { Variables } from '@/schemas/versions/source/v0';
 
-type Options = { filePath: string; incomingEnvVars?: EnvVars };
-
-function mergeVariables({
-  incomingEnvVars,
-  variables,
-  cwd,
-}: {
+type Options = {
   incomingEnvVars: EnvVars;
   variables: Variables;
   cwd: string;
-}): EnvVars {
+};
+
+export default function mergeVariables({ incomingEnvVars, variables, cwd }: Options): EnvVars {
   const envVars: EnvVars = { ...incomingEnvVars };
   logger.debug(`Incoming env var keys ${Object.keys(envVars)}`);
 
@@ -45,22 +35,4 @@ function mergeVariables({
   });
 
   return envVars;
-}
-
-export default function processSourceFile({ filePath, incomingEnvVars = {} }: Options) {
-  logger.debug(`Processing file ${filePath}`);
-
-  const source = readFile(filePath, SourceSchema);
-  const envVars = mergeVariables({
-    incomingEnvVars,
-    variables: source.vars,
-    cwd: path.dirname(path.resolve(filePath)),
-  });
-
-  return source.filter
-    ? filterVariables({
-        filters: source.filter,
-        envVars,
-      })
-    : envVars;
 }
