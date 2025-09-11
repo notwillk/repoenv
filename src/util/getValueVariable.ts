@@ -1,5 +1,5 @@
 import { ValueVariable } from '@/schemas/versions/variable';
-import { EnvVars } from '@/types/EnvVars';
+import { EnvVars } from '@/util/EnvVars';
 import { env } from 'string-env-interpolation';
 
 type Options = {

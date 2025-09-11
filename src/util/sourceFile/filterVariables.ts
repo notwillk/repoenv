@@ -1,6 +1,6 @@
 import picomatch from 'picomatch';
 
-import { EnvVars } from '@/types/EnvVars';
+import { EnvVars } from '@/util/EnvVars';
 
 type Options = { envVars: EnvVars; filters: string[] };
 

@@ -1,4 +1,4 @@
-import { EnvVars } from '@/types/EnvVars';
+import { EnvVars } from '@/util/EnvVars';
 import logger from './logger';
 
 type OutputFormat = 'json' | 'dotenv';

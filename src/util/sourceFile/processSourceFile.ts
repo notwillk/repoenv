@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { EnvVars } from '@/types/EnvVars';
+import { EnvVars } from '@/util/EnvVars';
 import SourceSchema from '@/schemas/source';
 import readFile from '@/util/readFile';
 import getDerivationOrder from '@/util/getDerivationOrder';

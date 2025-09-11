@@ -1,7 +1,7 @@
 import { execSync } from 'node:child_process';
 import CommandSubstitutionError from '@/errors/CommandSubstitutionError';
 import { SubstitutionVariable } from '@/schemas/versions/variable';
-import { EnvVars } from '@/types/EnvVars';
+import { EnvVars } from '@/util/EnvVars';
 import { env } from 'string-env-interpolation';
 
 type Options = {

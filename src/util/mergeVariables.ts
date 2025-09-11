@@ -1,4 +1,4 @@
-import { EnvVars } from '@/types/EnvVars';
+import { EnvVars } from '@/util/EnvVars';
 import getDerivationOrder from '@/util/getDerivationOrder';
 import processVariable from '@/util/processVariable';
 import logger from '@/util/logger';

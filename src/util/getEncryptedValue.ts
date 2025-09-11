@@ -1,4 +1,4 @@
-import { EnvVars } from '@/types/EnvVars';
+import { EnvVars } from '@/util/EnvVars';
 
 import { aes256GcmDecrypt } from '@/util/crypto';
 import { EncryptedVariable, SUPPORTED_ENCRYPTION_ALGORITHMS } from '@/schemas/versions/variable';
