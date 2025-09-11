@@ -1,5 +1,5 @@
 import { ValueVariable } from '@/schemas/versions/variable';
-import { EnvVars } from '@/util/EnvVars';
+import EnvVars from '@/util/EnvVars';
 import { env } from 'string-env-interpolation';
 
 type Options = {
@@ -8,5 +8,5 @@ type Options = {
 };
 
 export default function getValueVariable({ def, envVars }: Options): string {
-  return env(def.value, envVars);
+  return env(def.value, envVars.toObject());
 }

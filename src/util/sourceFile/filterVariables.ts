@@ -1,6 +1,6 @@
 import picomatch from 'picomatch';
 
-import { EnvVars } from '@/util/EnvVars';
+import EnvVars from '@/util/EnvVars';
 
 type Options = { envVars: EnvVars; filters: string[] };
 
@@ -11,6 +11,7 @@ function filterVariable(
   return picomatch.isMatch(varName, include) && !picomatch.isMatch(varName, exclude);
 }
 
+// TODO: put this into EnvVars class
 export default function filterVariables({ envVars, filters }: Options): EnvVars {
   const parsedFilters = filters.reduce<{ include: string[]; exclude: string[] }>(
     ({ include, exclude }, pattern) =>
@@ -20,7 +21,9 @@ export default function filterVariables({ envVars, filters }: Options): EnvVars 
     { include: [], exclude: [] },
   );
 
-  return Object.fromEntries(
-    Object.entries(envVars).filter(([varName]) => filterVariable(varName, parsedFilters)),
+  return new EnvVars(
+    Object.fromEntries(
+      envVars.entries().filter(([varName]) => filterVariable(varName, parsedFilters)),
+    ),
   );
 }

@@ -7,6 +7,7 @@ import processSourceFile from '@/util/sourceFile/processSourceFile';
 import config from '@/util/config';
 import filterVariables from '@/util/sourceFile/filterVariables';
 import mergeVariables from '@/util/mergeVariables';
+import EnvVars from '@/util/EnvVars';
 
 const OptionsSchema = z.object({
   keysOnly: z.boolean().optional().default(false),
@@ -24,8 +25,8 @@ export function compileCommandHandler(
   const inbound_filter = config?.data?.inbound_filter;
 
   const incomingEnvVars = inbound_filter
-    ? filterVariables({ envVars: process.env, filters: inbound_filter })
-    : process.env;
+    ? filterVariables({ envVars: new EnvVars(process.env), filters: inbound_filter })
+    : new EnvVars(process.env);
 
   const sourceEnvVars =
     config.data?.vars && config.configPath

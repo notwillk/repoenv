@@ -1,4 +1,4 @@
-import crypto, { randomBytes } from 'node:crypto';
+import crypto from 'node:crypto';
 
 type EncryptFunction = (options: {
   plaintext: string;
@@ -15,7 +15,7 @@ type DecryptFunction = (options: {
 type GenerateKeyFunction = () => string;
 
 export const aes256GcmGenerateKey: GenerateKeyFunction = () => {
-  return randomBytes(32).toString('base64');
+  return crypto.randomBytes(32).toString('base64');
 };
 
 export const aes256GcmEncrypt: EncryptFunction = ({ plaintext, key, encoding }): string => {

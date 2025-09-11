@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { EnvVars } from '@/util/EnvVars';
+import EnvVars from '@/util/EnvVars';
 import SourceSchema from '@/schemas/source';
 import readFile from '@/util/readFile';
 import getDerivationOrder from '@/util/getDerivationOrder';
@@ -21,12 +21,12 @@ function mergeVariables({
   variables: Variables;
   cwd: string;
 }): EnvVars {
-  const envVars: EnvVars = { ...incomingEnvVars };
+  const envVars: EnvVars = new EnvVars(incomingEnvVars);
   logger.debug(`Incoming env var keys ${Object.keys(envVars)}`);
 
   const derivationOrder = getDerivationOrder(variables);
-  const otherSourceVars = variables ? Object.keys(variables).filter((k) => !(k in envVars)) : [];
-  const otherIncomingVars = Object.keys(envVars).filter((k) => !derivationOrder.includes(k));
+  const otherSourceVars = variables ? Object.keys(variables).filter((k) => !envVars.has(k)) : [];
+  const otherIncomingVars = envVars.keys().filter((k) => !derivationOrder.includes(k));
   const varsToProcess = [...otherIncomingVars, ...otherSourceVars, ...derivationOrder];
 
   logger.debug(`Var process order: ${varsToProcess}`);
@@ -36,8 +36,8 @@ function mergeVariables({
       logger.debug(`Processing variable ${varName} from source file`);
       const def = variables[varName];
       const value = processVariable({ def, cwd, envVars });
-      envVars[varName] = value;
-    } else if (varName in envVars) {
+      envVars.set(varName, value);
+    } else if (envVars.has(varName)) {
       logger.debug(`No change in variable ${varName}, using existing value`);
     } else {
       throw new Error(`Variable ${varName} not found in source file or environment`);
@@ -47,12 +47,12 @@ function mergeVariables({
   return envVars;
 }
 
-export default function processSourceFile({ filePath, incomingEnvVars = {} }: Options) {
+export default function processSourceFile({ filePath, incomingEnvVars }: Options) {
   logger.debug(`Processing file ${filePath}`);
 
   const source = readFile(filePath, SourceSchema);
   const envVars = mergeVariables({
-    incomingEnvVars,
+    incomingEnvVars: incomingEnvVars ? incomingEnvVars : new EnvVars(),
     variables: source.vars,
     cwd: path.dirname(path.resolve(filePath)),
   });

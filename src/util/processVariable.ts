@@ -1,4 +1,4 @@
-import { EnvVars } from '@/util/EnvVars';
+import EnvVars from '@/util/EnvVars';
 
 import getSubstitutedValue from '@/util/getSubstitutedValue';
 import {
