@@ -6,7 +6,6 @@ import readFile from '@/util/readFile';
 import getDerivationOrder from '@/util/getDerivationOrder';
 
 import processVariable from '../processVariable';
-import filterVariables from './filterVariables';
 import logger from '../logger';
 import { Variables } from '@/schemas/versions/source/v0';
 
@@ -57,10 +56,5 @@ export default function processSourceFile({ filePath, incomingEnvVars }: Options
     cwd: path.dirname(path.resolve(filePath)),
   });
 
-  return source.filter
-    ? filterVariables({
-        filters: source.filter,
-        envVars,
-      })
-    : envVars;
+  return source.filter ? envVars.filter(source.filter) : envVars;
 }

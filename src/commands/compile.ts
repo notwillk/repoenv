@@ -5,7 +5,6 @@ import logger from '@/util/logger';
 import output from '@/util/output';
 import processSourceFile from '@/util/sourceFile/processSourceFile';
 import config from '@/util/config';
-import filterVariables from '@/util/sourceFile/filterVariables';
 import mergeVariables from '@/util/mergeVariables';
 import EnvVars from '@/util/EnvVars';
 
@@ -23,10 +22,9 @@ export function compileCommandHandler(
   logger.debug('Globals', command.globals);
 
   const inbound_filter = config?.data?.inbound_filter;
+  const processEnvVars = new EnvVars(process.env);
 
-  const incomingEnvVars = inbound_filter
-    ? filterVariables({ envVars: new EnvVars(process.env), filters: inbound_filter })
-    : new EnvVars(process.env);
+  const incomingEnvVars = inbound_filter ? processEnvVars.filter(inbound_filter) : processEnvVars;
 
   const sourceEnvVars =
     config.data?.vars && config.configPath

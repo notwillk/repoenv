@@ -1,5 +1,14 @@
+import picomatch from 'picomatch';
+
 export function isEnvVars(obj: unknown): obj is EnvVars {
   return obj instanceof EnvVars;
+}
+
+function filterVariable(
+  varName: string,
+  { include, exclude }: { include: string[]; exclude: string[] },
+) {
+  return picomatch.isMatch(varName, include) && !picomatch.isMatch(varName, exclude);
 }
 
 export default class EnvVars {
@@ -37,5 +46,21 @@ export default class EnvVars {
     return Object.entries(this.values)
       .map(([key, val]) => `${key}=${val === undefined ? '' : `"${val.replace(/"/g, '\\"')}"`}`)
       .join('\n');
+  }
+
+  filter(filters: string[]): EnvVars {
+    const parsedFilters = filters.reduce<{ include: string[]; exclude: string[] }>(
+      ({ include, exclude }, pattern) =>
+        picomatch.scan(pattern).negated
+          ? { include, exclude: [...exclude, pattern] }
+          : { include: [...include, pattern], exclude },
+      { include: [], exclude: [] },
+    );
+
+    return new EnvVars(
+      Object.fromEntries(
+        this.entries().filter(([varName]) => filterVariable(varName, parsedFilters)),
+      ),
+    );
   }
 }
