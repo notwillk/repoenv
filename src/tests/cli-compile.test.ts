@@ -157,6 +157,7 @@ describe('CLI#compile command', () => {
       inbound_filter: Object.keys(GOOD_VAR),
       vars: {},
       sources: {},
+      keys: {},
     };
 
     writeFileSync(configFile, stringify(configVar), 'utf8');
@@ -191,6 +192,7 @@ describe('CLI#compile command', () => {
       inbound_filter: Object.keys(ENV_VARS),
       vars: CONFIG_ENV_VARS,
       sources: {},
+      keys: {},
     };
 
     writeFileSync(configFile, stringify(configVar), 'utf8');

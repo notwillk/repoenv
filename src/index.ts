@@ -9,6 +9,7 @@ import { getGitRoot } from '@/util/git';
 import config from '@/util/config';
 import { exit } from 'node:process';
 import { keyInitCommandHandler } from './commands/keyInit';
+import { initCommandHandler } from './commands/init';
 
 program
   .name('repoenv')
@@ -33,11 +34,10 @@ program.hook('preAction', (_, command) => {
 });
 
 program
-  .command('compile')
-  .description("compile service's env vars")
-  .argument('[service]', 'env file to compile')
-  .option('--keys-only', 'show only keys, no values', false)
-  .action(compileCommandHandler);
+  .command('init')
+  .description('initialize a config file')
+  .argument('[configpath]', 'location of the config file to init')
+  .action(initCommandHandler);
 
 program
   .command('keyinit')
@@ -45,6 +45,13 @@ program
   .argument('<keyname>', 'key name to initialize')
   .option('--algorithm <algorithm>', 'algorithm to use', 'aes-256-gcm')
   .action(keyInitCommandHandler);
+
+program
+  .command('compile')
+  .description("compile service's env vars")
+  .argument('[service]', 'env file to compile')
+  .option('--keys-only', 'show only keys, no values', false)
+  .action(compileCommandHandler);
 
 program.parseAsync().catch((err) => {
   logger.error((err as Error).message);

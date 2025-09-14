@@ -2,11 +2,10 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { z } from 'zod';
 
-import { getGitRoot } from '@/util/git';
 import ConfigSchema from '@/schemas/config';
 import logger from '@/util/logger';
-import { CONFIG_FILENAME } from '@/constants';
 import readFile from '@/util/readFile';
+import defaultConfigPath from './defaultConfigPath';
 
 class Config {
   configPath: string | null = null;
@@ -16,7 +15,7 @@ class Config {
     const useDefaultConfigFile = !env;
 
     const configPath = useDefaultConfigFile
-      ? path.join(getGitRoot()!, CONFIG_FILENAME)
+      ? defaultConfigPath()
       : path.resolve(process.cwd(), env);
 
     logger.debug(`Config file: ${configPath}`);
