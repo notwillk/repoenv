@@ -10,6 +10,8 @@ import {
 } from '@/schemas/versions/variable';
 import getEncryptedValue from './getEncryptedValue';
 import getValueVariable from './getValueVariable';
+import Value from './Value';
+import logger from './logger';
 
 type Options = {
   def: Variable;
@@ -17,16 +19,26 @@ type Options = {
   envVars: EnvVars;
 };
 
-export default function processVariable({ def, cwd, envVars }: Options): string {
+function getValue({ def, cwd, envVars }: Options): Value {
   if (isPlainStringVariable(def)) {
-    return def;
+    logger.debug('Definition is plain string');
+    return Value.fromString(def);
   } else if (isValueVariable(def)) {
-    return getValueVariable({ def, envVars });
+    logger.debug('Definition is string');
+    return new Value({ value: getValueVariable({ def, envVars }), redact: def.redact });
   } else if (isSubstitutionVariable(def)) {
-    return getSubstitutedValue({ def, envVars, cwd });
+    logger.debug('Value is substituted via command');
+    return new Value({ value: getSubstitutedValue({ def, envVars, cwd }) });
   } else if (isEncryptedVariable(def)) {
-    return getEncryptedValue({ def, envVars });
+    logger.debug('Value was encrypted');
+    return new Value({ value: getEncryptedValue({ def, envVars }) });
   }
 
   throw new Error('Error parsing file');
+}
+
+export default function processVariable({ def, cwd, envVars }: Options): Value {
+  const output = getValue({ def, cwd, envVars });
+  logger.debug(`Value: ${output.toString()}`);
+  return output;
 }

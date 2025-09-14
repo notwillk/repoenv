@@ -32,7 +32,7 @@ const baseVar = z.object({
   // format: z.string().regex(formatRexexp).optional(),
   // regexp: z.string().optional(),
   // validator: z.string().optional(),
-  // redact: z.boolean().optional(),
+  redact: z.boolean().optional(),
   // unique: z.array(z.string()).optional(),
   // signature: z.string().optional(),
   // signature_algorithm: z.enum(['hmac-sha256', 'hmac-sha512']).optional().default('hmac-sha256'),

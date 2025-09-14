@@ -4,7 +4,6 @@ import EnvVars from '@/util/EnvVars';
 import SourceSchema from '@/schemas/source';
 import readFile from '@/util/readFile';
 import getDerivationOrder from '@/util/getDerivationOrder';
-import Value from '@/util/Value';
 
 import processVariable from '../processVariable';
 import logger from '../logger';
@@ -36,7 +35,7 @@ function mergeVariables({
       logger.debug(`Processing variable ${varName} from source file`);
       const def = variables[varName];
       const value = processVariable({ def, cwd, envVars });
-      envVars.set(varName, new Value({ value }));
+      envVars.set(varName, value);
     } else if (envVars.has(varName)) {
       logger.debug(`No change in variable ${varName}, using existing value`);
     } else {

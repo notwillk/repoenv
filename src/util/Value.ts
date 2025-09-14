@@ -1,25 +1,25 @@
 type ValueParams = {
   value?: string;
-  secret?: boolean;
+  redact?: boolean;
 };
 
 const REDACTED_VALUE = '*****';
 
 export default class Value {
   private value: string | undefined;
-  private secret: boolean | undefined;
+  private redact: boolean | undefined;
 
-  constructor({ value, secret }: ValueParams) {
+  constructor({ value, redact }: ValueParams) {
     this.value = value;
-    this.secret = secret;
+    this.redact = redact;
   }
 
   static fromString(value: string): Value {
     return new Value({ value });
   }
 
-  toString(): string {
-    return this.secret ? REDACTED_VALUE : (this.value ?? '');
+  toString(options: { ignoreRedaction?: boolean } = {}): string {
+    return this.redact && !options.ignoreRedaction ? REDACTED_VALUE : (this.value ?? '');
   }
 
   getValue(): string | undefined {
