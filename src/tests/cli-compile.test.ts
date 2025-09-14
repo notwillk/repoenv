@@ -249,4 +249,63 @@ describe('CLI#compile command', () => {
 
     expect(parsed).toMatchObject({ BAR: 'secret-bar' });
   });
+
+  describe('regexp validation', () => {
+    it('passes validation if string match', async () => {
+      const dir = temporaryDirectory();
+      const file = join(dir, 'env.yaml');
+      const envVar: Source = {
+        vars: {
+          FOO: {
+            value: 'abc123',
+            regexp: '^abc\\d+$',
+          },
+        },
+        filter: ['FOO'],
+      };
+
+      writeFileSync(file, stringify(envVar), 'utf8');
+
+      const { stdout, exitCode } = await execa('node', [CLI_PATH, '--json', 'compile', file], {
+        reject: false,
+      });
+
+      expect(exitCode).toBe(0);
+
+      let parsed;
+      expect(() => {
+        parsed = JSON.parse(stdout.trim());
+      }).not.toThrow();
+
+      expect(parsed).toMatchObject({ FOO: 'abc123' });
+    });
+
+    it('fails validation if string does not match', async () => {
+      const dir = temporaryDirectory();
+      const file = join(dir, 'env.yaml');
+      const envVar: Source = {
+        vars: {
+          FOO: {
+            value: 'xyz789',
+            regexp: '^abc\\d+$',
+          },
+        },
+        filter: ['FOO'],
+      };
+
+      writeFileSync(file, stringify(envVar), 'utf8');
+
+      const { stdout, exitCode, stderr } = await execa(
+        'node',
+        [CLI_PATH, '--json', 'compile', file],
+        {
+          reject: false,
+        },
+      );
+
+      expect(exitCode).not.toBe(0);
+      expect(stderr).toContain('Value does not match regexp');
+      expect(stdout.trim()).toBe('');
+    });
+  });
 });
