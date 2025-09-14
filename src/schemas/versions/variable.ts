@@ -31,7 +31,7 @@ export const SUPPORTED_ENCODINGS: BufferEncoding[] = [
 const baseVar = z.object({
   // format: z.string().regex(formatRexexp).optional(),
   regexp: z.string().optional(),
-  // validator: z.string().optional(),
+  validator: z.string().optional(),
   redact: z.boolean().optional(),
   // unique: z.array(z.string()).optional(),
   // signature: z.string().optional(),

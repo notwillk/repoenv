@@ -38,9 +38,7 @@ program
   .option('--keys-only', 'show only keys, no values', false)
   .action(compileCommandHandler);
 
-try {
-  program.parse();
-} catch (err) {
+program.parseAsync().catch((err) => {
   logger.error((err as Error).message);
   exit(1);
-}
+});

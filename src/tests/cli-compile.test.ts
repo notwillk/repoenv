@@ -250,6 +250,65 @@ describe('CLI#compile command', () => {
     expect(parsed).toMatchObject({ BAR: 'secret-bar' });
   });
 
+  describe('external validation', () => {
+    it('passes validation when command exits with 0', async () => {
+      const dir = temporaryDirectory();
+      const file = join(dir, 'env.yaml');
+      const envVar: Source = {
+        vars: {
+          FOO: {
+            value: 'valid-value',
+            validator: 'true',
+          },
+        },
+        filter: ['FOO'],
+      };
+
+      writeFileSync(file, stringify(envVar), 'utf8');
+
+      const { stdout, exitCode } = await execa('node', [CLI_PATH, '--json', 'compile', file], {
+        reject: false,
+      });
+
+      expect(exitCode).toBe(0);
+
+      let parsed;
+      expect(() => {
+        parsed = JSON.parse(stdout.trim());
+      }).not.toThrow();
+
+      expect(parsed).toMatchObject({ FOO: 'valid-value' });
+    });
+
+    it('fails validation when command exits with non-0', async () => {
+      const dir = temporaryDirectory();
+      const file = join(dir, 'env.yaml');
+      const envVar: Source = {
+        vars: {
+          FOO: {
+            value: 'invalid-value',
+            validator: 'false',
+          },
+        },
+        filter: ['FOO'],
+      };
+
+      writeFileSync(file, stringify(envVar), 'utf8');
+
+      const { stdout, exitCode, stderr } = await execa(
+        'node',
+        [CLI_PATH, '--json', 'compile', file],
+        {
+          reject: false,
+        },
+      );
+
+      expect(exitCode).not.toBe(0);
+      expect(stderr).toContain('External validation failed');
+      expect(stdout.trim()).toBe('');
+    });
+  });
+
   describe('regexp validation', () => {
     it('passes validation if string match', async () => {
       const dir = temporaryDirectory();

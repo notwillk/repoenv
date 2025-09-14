@@ -12,11 +12,11 @@ const OptionsSchema = z.object({
   keysOnly: z.boolean().optional().default(false),
 });
 
-export function compileCommandHandler(
+export async function compileCommandHandler(
   filePath: string,
   maybeOptions: z.infer<typeof OptionsSchema>,
   command: GlobalCommand,
-): void | Promise<void> {
+): Promise<void> {
   const options = OptionsSchema.parse(maybeOptions);
   logger.debug('Options', options);
   logger.debug('Globals', command.globals);
@@ -28,11 +28,15 @@ export function compileCommandHandler(
 
   const sourceEnvVars =
     config.data?.vars && config.configPath
-      ? mergeVariables({ incomingEnvVars, variables: config.data?.vars, cwd: config.configPath })
+      ? await mergeVariables({
+          incomingEnvVars,
+          variables: config.data?.vars,
+          cwd: config.configPath,
+        })
       : incomingEnvVars;
 
   const envVars = filePath
-    ? processSourceFile({
+    ? await processSourceFile({
         filePath,
         incomingEnvVars: sourceEnvVars,
       })

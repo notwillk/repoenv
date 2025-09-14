@@ -12,6 +12,9 @@ import getEncryptedValue from './getEncryptedValue';
 import getValueVariable from './getValueVariable';
 import Value from './Value';
 import logger from './logger';
+import externalValidate from './externalValidate';
+import FailedExternalValidationError from '@/errors/FailedExternalValidationError';
+import FailedRegexpValidationError from '@/errors/FailedRegexpValidationError';
 
 type Options = {
   def: Variable;
@@ -45,7 +48,7 @@ function getValue({ def, cwd, envVars }: Options): Value {
   throw new Error('Error parsing file');
 }
 
-export default function processVariable({ def, cwd, envVars }: Options): Value {
+export default async function processVariable({ def, cwd, envVars }: Options): Promise<Value> {
   const output = getValue({ def, cwd, envVars });
   logger.debug(`Value: ${output.toString()}`);
   const maybeRegexp = getRegexp(def);
@@ -53,7 +56,16 @@ export default function processVariable({ def, cwd, envVars }: Options): Value {
   if (maybeRegexp) {
     logger.debug(`Validating value against regexp: ${maybeRegexp}`);
     if (!maybeRegexp.test(output.toString())) {
-      throw new Error(`Value does not match regexp: ${maybeRegexp}`);
+      throw new FailedRegexpValidationError({ regexp: maybeRegexp });
+    }
+  }
+
+  const maybeValidator = isPlainStringVariable(def) ? undefined : def.validator;
+  if (maybeValidator) {
+    logger.debug(`Validating value via external command: ${maybeValidator}`);
+    const good = await externalValidate({ value: output.getValue(), command: maybeValidator });
+    if (!good) {
+      throw new FailedExternalValidationError();
     }
   }
 

@@ -11,7 +11,7 @@ import { Variables } from '@/schemas/versions/source/v0';
 
 type Options = { filePath: string; incomingEnvVars?: EnvVars };
 
-function mergeVariables({
+async function mergeVariables({
   incomingEnvVars,
   variables,
   cwd,
@@ -19,7 +19,7 @@ function mergeVariables({
   incomingEnvVars: EnvVars;
   variables: Variables;
   cwd: string;
-}): EnvVars {
+}): Promise<EnvVars> {
   const envVars: EnvVars = new EnvVars(incomingEnvVars);
   logger.debug(`Incoming env var keys ${Object.keys(envVars)}`);
 
@@ -30,27 +30,29 @@ function mergeVariables({
 
   logger.debug(`Var process order: ${varsToProcess}`);
 
-  varsToProcess.forEach((varName) => {
-    if (variables && varName in variables) {
-      logger.debug(`Processing variable ${varName} from source file`);
-      const def = variables[varName];
-      const value = processVariable({ def, cwd, envVars });
-      envVars.set(varName, value);
-    } else if (envVars.has(varName)) {
-      logger.debug(`No change in variable ${varName}, using existing value`);
-    } else {
-      throw new Error(`Variable ${varName} not found in source file or environment`);
-    }
-  });
+  await Promise.all(
+    varsToProcess.map(async (varName) => {
+      if (variables && varName in variables) {
+        logger.debug(`Processing variable ${varName} from source file`);
+        const def = variables[varName];
+        const value = await processVariable({ def, cwd, envVars });
+        envVars.set(varName, value);
+      } else if (envVars.has(varName)) {
+        logger.debug(`No change in variable ${varName}, using existing value`);
+      } else {
+        throw new Error(`Variable ${varName} not found in source file or environment`);
+      }
+    }),
+  );
 
   return envVars;
 }
 
-export default function processSourceFile({ filePath, incomingEnvVars }: Options) {
+export default async function processSourceFile({ filePath, incomingEnvVars }: Options) {
   logger.debug(`Processing file ${filePath}`);
 
   const source = readFile(filePath, SourceSchema);
-  const envVars = mergeVariables({
+  const envVars = await mergeVariables({
     incomingEnvVars: incomingEnvVars ? incomingEnvVars : new EnvVars(),
     variables: source.vars,
     cwd: path.dirname(path.resolve(filePath)),

@@ -10,7 +10,11 @@ type Options = {
   cwd: string;
 };
 
-export default function mergeVariables({ incomingEnvVars, variables, cwd }: Options): EnvVars {
+export default async function mergeVariables({
+  incomingEnvVars,
+  variables,
+  cwd,
+}: Options): Promise<EnvVars> {
   const envVars: EnvVars = new EnvVars(incomingEnvVars);
   logger.debug(`Incoming env var keys ${Object.keys(envVars)}`);
 
@@ -21,18 +25,20 @@ export default function mergeVariables({ incomingEnvVars, variables, cwd }: Opti
 
   logger.debug(`Var process order: ${varsToProcess}`);
 
-  varsToProcess.forEach((varName) => {
-    if (variables && varName in variables) {
-      logger.debug(`Processing variable ${varName} from source file`);
-      const def = variables[varName];
-      const value = processVariable({ def, cwd, envVars });
-      envVars.set(varName, value);
-    } else if (varName in envVars) {
-      logger.debug(`No change in variable ${varName}, using existing value`);
-    } else {
-      throw new Error(`Variable ${varName} not found in source file or environment`);
-    }
-  });
+  await Promise.all(
+    varsToProcess.map(async (varName) => {
+      if (variables && varName in variables) {
+        logger.debug(`Processing variable ${varName} from source file`);
+        const def = variables[varName];
+        const value = await processVariable({ def, cwd, envVars });
+        envVars.set(varName, value);
+      } else if (varName in envVars) {
+        logger.debug(`No change in variable ${varName}, using existing value`);
+      } else {
+        throw new Error(`Variable ${varName} not found in source file or environment`);
+      }
+    }),
+  );
 
   return envVars;
 }
