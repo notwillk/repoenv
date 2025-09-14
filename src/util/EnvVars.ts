@@ -1,15 +1,8 @@
-import picomatch from 'picomatch';
 import Value from './Value';
+import getVariableNameFilter from './getVariableNameFilter';
 
 export function isEnvVars(obj: unknown): obj is EnvVars {
   return obj instanceof EnvVars;
-}
-
-function filterVariable(
-  varName: string,
-  { include, exclude }: { include: string[]; exclude: string[] },
-) {
-  return picomatch.isMatch(varName, include) && !picomatch.isMatch(varName, exclude);
 }
 
 export default class EnvVars {
@@ -55,20 +48,13 @@ export default class EnvVars {
   }
 
   filter(filters: string[]): EnvVars {
-    const parsedFilters = filters.reduce<{ include: string[]; exclude: string[] }>(
-      ({ include, exclude }, pattern) =>
-        picomatch.scan(pattern).negated
-          ? { include, exclude: [...exclude, pattern] }
-          : { include: [...include, pattern], exclude },
-      { include: [], exclude: [] },
-    );
+    const entryFilter = getVariableNameFilter(filters);
 
     return new EnvVars(
-      Object.fromEntries(
-        this.entries().filter(([varName]) => filterVariable(varName, parsedFilters)),
-      ),
+      Object.fromEntries(this.entries().filter(([varName]) => entryFilter(varName))),
     );
   }
+
   static fromObject(obj: Record<string, string | undefined>): EnvVars {
     return new EnvVars(
       Object.fromEntries(Object.entries(obj).map(([key, val]) => [key, new Value({ value: val })])),
