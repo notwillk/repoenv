@@ -17,7 +17,6 @@ import {
   getFloatModifiedPattern,
   getIntegerModifiedPattern,
   getRangePattern,
-  getFormatValidator,
 } from './formats';
 
 const TEST_STATIC_FORMATS = ['url', 'iso8601', 'email', 'ipv4', 'ipv6'];
@@ -459,91 +458,6 @@ describe('#formats', () => {
         maxIncluded: false,
         max: 1.8,
       });
-    });
-  });
-
-  describe('getFormatValidator', () => {
-    it('should always validate static formats', () => {
-      const validate = getFormatValidator({ type: 'string', hasModifier: false });
-      expect(validate(null)).toBe(true);
-    });
-
-    it('should respect min when inclusive', () => {
-      const validate = getFormatValidator({
-        type: 'string',
-        hasModifier: true,
-        minIncluded: true,
-        maxIncluded: true,
-        min: 5,
-      });
-      expect(validate(5)).toBe(true);
-      expect(validate(4)).toBe(false);
-    });
-
-    it('should respect min when exclusive', () => {
-      const validate = getFormatValidator({
-        type: 'string',
-        hasModifier: true,
-        minIncluded: false,
-        maxIncluded: true,
-        min: 5,
-      });
-      expect(validate(5.1)).toBe(true);
-      expect(validate(5)).toBe(false);
-    });
-
-    it('should respect max when inclusive', () => {
-      const validate = getFormatValidator({
-        type: 'string',
-        hasModifier: true,
-        minIncluded: true,
-        maxIncluded: true,
-        max: 5,
-      });
-      expect(validate(5)).toBe(true);
-      expect(validate(5.1)).toBe(false);
-    });
-
-    it('should respect max when exclusive', () => {
-      const validate = getFormatValidator({
-        type: 'string',
-        hasModifier: true,
-        minIncluded: true,
-        maxIncluded: false,
-        max: 5,
-      });
-      expect(validate(4.9)).toBe(true);
-      expect(validate(5)).toBe(false);
-    });
-
-    it('should respect min and max when inclusive', () => {
-      const validate = getFormatValidator({
-        type: 'string',
-        hasModifier: true,
-        minIncluded: true,
-        maxIncluded: true,
-        min: 1,
-        max: 5,
-      });
-      expect(validate(2)).toBe(true);
-      expect(validate(1)).toBe(true);
-      expect(validate(5)).toBe(true);
-      expect(validate(0)).toBe(false);
-      expect(validate(6)).toBe(false);
-    });
-
-    it('should respect min and max when exclusive', () => {
-      const validate = getFormatValidator({
-        type: 'string',
-        hasModifier: true,
-        minIncluded: false,
-        maxIncluded: false,
-        min: 1,
-        max: 5,
-      });
-      expect(validate(2)).toBe(true);
-      expect(validate(1)).toBe(false);
-      expect(validate(5)).toBe(false);
     });
   });
 });

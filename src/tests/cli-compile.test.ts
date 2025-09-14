@@ -309,6 +309,65 @@ describe('CLI#compile command', () => {
     });
   });
 
+  describe('has format validation', () => {
+    it('passes validation if format matches', async () => {
+      const dir = temporaryDirectory();
+      const file = join(dir, 'env.yaml');
+      const envVar: Source = {
+        vars: {
+          FOO: {
+            value: 'abc123',
+            format: 'string',
+          },
+        },
+        filter: ['FOO'],
+      };
+
+      writeFileSync(file, stringify(envVar), 'utf8');
+
+      const { stdout, exitCode } = await execa('node', [CLI_PATH, '--json', 'compile', file], {
+        reject: false,
+      });
+
+      expect(exitCode).toBe(0);
+
+      let parsed;
+      expect(() => {
+        parsed = JSON.parse(stdout.trim());
+      }).not.toThrow();
+
+      expect(parsed).toMatchObject({ FOO: 'abc123' });
+    });
+
+    it('fails validation if format does not match', async () => {
+      const dir = temporaryDirectory();
+      const file = join(dir, 'env.yaml');
+      const envVar: Source = {
+        vars: {
+          FOO: {
+            value: 'xyz789',
+            format: 'email',
+          },
+        },
+        filter: ['FOO'],
+      };
+
+      writeFileSync(file, stringify(envVar), 'utf8');
+
+      const { stdout, exitCode, stderr } = await execa(
+        'node',
+        [CLI_PATH, '--json', 'compile', file],
+        {
+          reject: false,
+        },
+      );
+
+      expect(exitCode).not.toBe(0);
+      expect(stderr).toContain('Format validation failed');
+      expect(stdout.trim()).toBe('');
+    });
+  });
+
   describe('regexp validation', () => {
     it('passes validation if string match', async () => {
       const dir = temporaryDirectory();

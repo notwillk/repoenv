@@ -1,11 +1,9 @@
 import z from 'zod';
 
-// import { getFormatRegex } from '@/util/formats';
+import { getFormatRegex } from '@/util/formats';
 import { ENV_VAR_NAME_PATTERN } from '@/constants';
+import { SUPORTED_FORMATS } from '@/util/ParsedFormat';
 
-export const STATIC_FORMATS = ['url', 'iso8601', 'email', 'ipv4', 'ipv6', 'uuid', 'ulid'] as const;
-export const INTEGER_MODIFIED_FORMATS = ['string', 'base64', 'hex', 'integer'] as const;
-export const FLOAT_MODIFIED_FORMATS = ['float'] as const;
 export const SUPPORTED_ENCRYPTION_ALGORITHMS = ['aes-256-gcm'] as const;
 export const SUPPORTED_ENCODINGS: BufferEncoding[] = [
   'ascii',
@@ -22,14 +20,10 @@ export const SUPPORTED_ENCODINGS: BufferEncoding[] = [
   'hex',
 ] as const;
 
-// const formatRexexp = getFormatRegex({
-//   staticFormats: STATIC_FORMATS,
-//   integerModifiedFormats: INTEGER_MODIFIED_FORMATS,
-//   floatModifiedFormats: FLOAT_MODIFIED_FORMATS,
-// });
+const formatRexexp = getFormatRegex(SUPORTED_FORMATS);
 
 const baseVar = z.object({
-  // format: z.string().regex(formatRexexp).optional(),
+  format: z.string().regex(formatRexexp).optional(),
   regexp: z.string().optional(),
   validator: z.string().optional(),
   redact: z.boolean().optional(),

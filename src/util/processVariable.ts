@@ -15,6 +15,9 @@ import logger from './logger';
 import externalValidate from './externalValidate';
 import FailedExternalValidationError from '@/errors/FailedExternalValidationError';
 import FailedRegexpValidationError from '@/errors/FailedRegexpValidationError';
+import { parseFormat } from './formats';
+import { SUPORTED_FORMATS } from './ParsedFormat';
+import FailedFormatValidationError from '@/errors/FailedFormatValidationError';
 
 type Options = {
   def: Variable;
@@ -53,17 +56,31 @@ export default async function processVariable({ def, cwd, envVars }: Options): P
   logger.debug(`Value: ${output.toString()}`);
   const maybeRegexp = getRegexp(def);
 
-  if (maybeRegexp) {
+  const maybeValue = output.getValue();
+
+  if (maybeRegexp && maybeValue !== undefined) {
     logger.debug(`Validating value against regexp: ${maybeRegexp}`);
-    if (!maybeRegexp.test(output.toString())) {
+    if (!maybeRegexp.test(maybeValue)) {
       throw new FailedRegexpValidationError({ regexp: maybeRegexp });
+    }
+  }
+
+  const maybeFormat = isPlainStringVariable(def) ? undefined : def.format;
+  if (maybeFormat && maybeValue !== undefined) {
+    logger.debug(`Validating value via format: ${maybeFormat}`);
+
+    const maybeParsedFormat = parseFormat(maybeFormat, SUPORTED_FORMATS);
+    const good = Boolean(maybeParsedFormat?.validate(maybeValue));
+
+    if (!good) {
+      throw new FailedFormatValidationError({ format: maybeFormat });
     }
   }
 
   const maybeValidator = isPlainStringVariable(def) ? undefined : def.validator;
   if (maybeValidator) {
     logger.debug(`Validating value via external command: ${maybeValidator}`);
-    const good = await externalValidate({ value: output.getValue(), command: maybeValidator });
+    const good = await externalValidate({ value: maybeValue, command: maybeValidator });
     if (!good) {
       throw new FailedExternalValidationError();
     }

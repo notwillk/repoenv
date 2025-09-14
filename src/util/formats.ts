@@ -1,31 +1,13 @@
+import ParsedFormat, { isFormatType } from './ParsedFormat';
+
 const reEscape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const joinAlt = (arr: readonly string[]) => arr.map(reEscape).join('|');
-
-type ParsedStaticFormat = {
-  type: string;
-  hasModifier: false;
-};
-
-type ParsedModifiedFormat = {
-  type: string;
-  hasModifier: true;
-  minIncluded: boolean;
-  maxIncluded: boolean;
-} & ({ min?: number; max: number } | { min: number; max?: number });
-
-type Prettify<T> = { [K in keyof T]: T[K] } & {};
-
-type ParsedFormat = Prettify<ParsedStaticFormat | ParsedModifiedFormat>;
 
 type Formats = {
   staticFormats: readonly string[];
   integerModifiedFormats: readonly string[];
   floatModifiedFormats: readonly string[];
 };
-
-function isParsedModifiedFormat(format: ParsedFormat): format is ParsedModifiedFormat {
-  return format.hasModifier;
-}
 
 export const INTEGER_PATTERN = '[+-]?\\d+';
 export const FLOAT_PATTERN = '[+-]?\\d+(?:\\.\\d*)?';
@@ -92,11 +74,11 @@ export function parseFormat(maybeFormat: string, formats: Formats): ParsedFormat
   let min: number | undefined;
   let max: number | undefined;
 
-  if (match.groups.staticType) {
-    return {
+  if (match.groups.staticType && isFormatType(match.groups.staticType)) {
+    return new ParsedFormat({
       type: match.groups.staticType,
       hasModifier: false,
-    };
+    });
   } else if (match.groups.intType) {
     type = match.groups.intType;
     onlyMin = match.groups.intOnlyMin ? parseInt(match.groups.intOnlyMin, 10) : undefined;
@@ -113,66 +95,40 @@ export function parseFormat(maybeFormat: string, formats: Formats): ParsedFormat
     throw new Error('Unexpected parse state');
   }
 
-  if (onlyMax !== undefined) {
-    return {
+  if (onlyMax !== undefined && isFormatType(type)) {
+    return new ParsedFormat({
       type,
       hasModifier: true,
       minIncluded,
       maxIncluded,
       max: onlyMax,
-    };
+    });
   }
 
-  if (onlyMin !== undefined) {
-    return {
+  if (onlyMin !== undefined && isFormatType(type)) {
+    return new ParsedFormat({
       type,
       hasModifier: true,
       minIncluded,
       maxIncluded,
       min: onlyMin,
-    };
+    });
   }
 
-  if (min !== undefined && max !== undefined) {
+  if (min !== undefined && max !== undefined && isFormatType(type)) {
     if (min > max) {
       throw new Error('Invalid range: min is greater than max');
     }
 
-    return {
+    return new ParsedFormat({
       type,
       hasModifier: true,
       minIncluded,
       maxIncluded,
       min,
       max,
-    };
+    });
   }
 
   throw new Error('Unexpected parse state');
-}
-
-export function getFormatValidator(format: ParsedFormat) {
-  return function validate(value: number | null): boolean {
-    function tooLow() {
-      if (isParsedModifiedFormat(format)) {
-        if (value === null) return false;
-        const { min, minIncluded } = format;
-        return min === undefined ? false : minIncluded ? value < min : value <= min;
-      }
-
-      return false;
-    }
-
-    function tooHigh() {
-      if (isParsedModifiedFormat(format)) {
-        if (value === null) return false;
-        const { max, maxIncluded } = format;
-        return max === undefined ? false : maxIncluded ? value > max : value >= max;
-      }
-
-      return false;
-    }
-
-    return !tooLow() && !tooHigh();
-  };
 }
