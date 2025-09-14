@@ -8,6 +8,7 @@ import logger from '@/util/logger';
 import { getGitRoot } from '@/util/git';
 import config from '@/util/config';
 import { exit } from 'node:process';
+import { keyInitCommandHandler } from './commands/keyInit';
 
 program
   .name('repoenv')
@@ -37,6 +38,13 @@ program
   .argument('[service]', 'env file to compile')
   .option('--keys-only', 'show only keys, no values', false)
   .action(compileCommandHandler);
+
+program
+  .command('keyinit')
+  .description('initialize a new secret key')
+  .argument('<keyname>', 'key name to initialize')
+  .option('--algorithm <algorithm>', 'algorithm to use', 'aes-256-gcm')
+  .action(keyInitCommandHandler);
 
 program.parseAsync().catch((err) => {
   logger.error((err as Error).message);
