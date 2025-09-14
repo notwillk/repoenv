@@ -14,6 +14,7 @@ describe('CLI#keyinit command', () => {
     const configVar: Omit<Config, 'keys'> = {
       vars: {},
       sources: {},
+      services: {},
     };
 
     writeFileSync(configFile, stringify(configVar), 'utf8');
@@ -51,6 +52,7 @@ describe('CLI#keyinit command', () => {
     const configVar: Config = {
       vars: {},
       sources: {},
+      services: {},
       keys: { EXISTING_KEY: { scheme: 'aes-256-gcm', update: { cmd: 'cat # update this' } } },
     };
 
@@ -94,6 +96,7 @@ describe('CLI#keyinit command', () => {
     const configVar: Config = {
       vars: {},
       sources: {},
+      services: {},
       keys: { EXISTING_KEY: { scheme: 'aes-256-gcm', update: { cmd: 'cat # update this' } } },
     };
 
@@ -127,6 +130,7 @@ describe('CLI#keyinit command', () => {
     const configVar: Config = {
       vars: {},
       sources: {},
+      services: {},
       keys: { EXISTING_KEY: { scheme: 'aes-256-gcm', update: { cmd: 'cat # update this' } } },
     };
 

@@ -38,4 +38,5 @@ export default z.object({
   vars: variablesSchema.optional().default({}),
   sources: z.record(z.string(), z.array(z.string())),
   keys: z.record(VariableNameSchema, KeySchema).optional().default({}),
+  services: z.record(z.string(), z.string()).optional().default({}),
 });

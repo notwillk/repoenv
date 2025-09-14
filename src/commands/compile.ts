@@ -7,13 +7,14 @@ import processSourceFile from '@/util/sourceFile/processSourceFile';
 import config from '@/util/config';
 import mergeVariables from '@/util/mergeVariables';
 import EnvVars from '@/util/EnvVars';
+import UndefinedServiceError from '@/errors/UndefinedServiceError';
 
 const OptionsSchema = z.object({
   keysOnly: z.boolean().optional().default(false),
 });
 
 export async function compileCommandHandler(
-  filePath: string,
+  serviceName: string,
   maybeOptions: z.infer<typeof OptionsSchema>,
   command: GlobalCommand,
 ): Promise<void> {
@@ -34,6 +35,12 @@ export async function compileCommandHandler(
           cwd: config.configPath,
         })
       : incomingEnvVars;
+
+  const filePath = config.sources[serviceName] || null;
+
+  if (serviceName && !filePath) {
+    throw new UndefinedServiceError({ serviceName });
+  }
 
   const envVars = filePath
     ? await processSourceFile({

@@ -49,7 +49,7 @@ program
 program
   .command('compile')
   .description("compile service's env vars")
-  .argument('[service]', 'env file to compile')
+  .argument('[service]', 'service to compile')
   .option('--keys-only', 'show only keys, no values', false)
   .action(compileCommandHandler);
 

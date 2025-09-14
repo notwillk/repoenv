@@ -7,9 +7,17 @@ import logger from '@/util/logger';
 import readFile from '@/util/readFile';
 import defaultConfigPath from './defaultConfigPath';
 
+function makeAbsolutePath(relativeOrAbsolutePath: string): string {
+  if (path.isAbsolute(relativeOrAbsolutePath)) {
+    return relativeOrAbsolutePath;
+  }
+  return path.resolve(process.cwd(), relativeOrAbsolutePath);
+}
+
 class Config {
   configPath: string | null = null;
   data: z.infer<typeof ConfigSchema> | null = null;
+  sources: Record<string, string> = {};
 
   load(env?: string): void {
     const useDefaultConfigFile = !env;
@@ -27,6 +35,12 @@ class Config {
     }
 
     this.configPath = configPath;
+    this.sources = Object.fromEntries(
+      Object.entries(this.data?.services || {}).map(([serviceName, servicePath]) => [
+        serviceName,
+        makeAbsolutePath(servicePath),
+      ]),
+    );
   }
 }
 

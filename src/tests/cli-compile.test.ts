@@ -45,13 +45,27 @@ describe('CLI#compile command', () => {
       vars: {},
       filter: ['FOO'],
     };
-
     writeFileSync(file, stringify(envVar), 'utf8');
 
-    const { stdout, exitCode } = await execa('node', [CLI_PATH, 'compile', file], {
-      reject: false,
-      env: { FOO: 'bar' },
-    });
+    const configFile = join(dir, 'config.yaml');
+    const configVar: Config = {
+      vars: {},
+      sources: {},
+      keys: {},
+      services: {
+        my_servie: file,
+      },
+    };
+    writeFileSync(configFile, stringify(configVar), 'utf8');
+
+    const { stdout, exitCode } = await execa(
+      'node',
+      [CLI_PATH, '--config', configFile, 'compile', 'my_servie'],
+      {
+        reject: false,
+        env: { FOO: 'bar' },
+      },
+    );
     expect(exitCode).toBe(0);
     expect(stdout.trim()).toBe('FOO="bar"');
   });
@@ -66,9 +80,20 @@ describe('CLI#compile command', () => {
 
     writeFileSync(file, stringify(envVar), 'utf8');
 
+    const configFile = join(dir, 'config.yaml');
+    const configVar: Config = {
+      vars: {},
+      sources: {},
+      keys: {},
+      services: {
+        my_servie: file,
+      },
+    };
+    writeFileSync(configFile, stringify(configVar), 'utf8');
+
     const { stdout, exitCode } = await execa(
       'node',
-      [CLI_PATH, '--json', '-vvv', 'compile', file],
+      [CLI_PATH, '--json', '-vvv', '--config', configFile, 'compile', 'my_servie'],
       {
         reject: false,
         env: { FOO: 'bar' },
@@ -91,12 +116,22 @@ describe('CLI#compile command', () => {
       vars: { BAR: { value: '-->${FOO}<--' } },
       filter: ['FOO', 'BAR'],
     };
-
     writeFileSync(file, stringify(envVar), 'utf8');
+
+    const configFile = join(dir, 'config.yaml');
+    const configVar: Config = {
+      vars: {},
+      sources: {},
+      keys: {},
+      services: {
+        my_servie: file,
+      },
+    };
+    writeFileSync(configFile, stringify(configVar), 'utf8');
 
     const { stdout, exitCode } = await execa(
       'node',
-      [CLI_PATH, '--json', '-vvv', 'compile', file],
+      [CLI_PATH, '--json', '-vvv', '--config', configFile, 'compile', 'my_servie'],
       {
         reject: false,
         env: { FOO: 'bar' },
@@ -119,12 +154,22 @@ describe('CLI#compile command', () => {
       vars: { BAR: { value: 'boop' } },
       filter: ['FOO', 'BAR'],
     };
-
     writeFileSync(file, stringify(envVar), 'utf8');
+
+    const configFile = join(dir, 'config.yaml');
+    const configVar: Config = {
+      vars: {},
+      sources: {},
+      keys: {},
+      services: {
+        my_service: file,
+      },
+    };
+    writeFileSync(configFile, stringify(configVar), 'utf8');
 
     const { stdout, exitCode } = await execa(
       'node',
-      [CLI_PATH, '--json', '-vvv', 'compile', '--keys-only', file],
+      [CLI_PATH, '--json', '-vvv', '--config', configFile, 'compile', '--keys-only', 'my_service'],
       {
         reject: false,
         env: { FOO: 'bar' },
@@ -158,13 +203,16 @@ describe('CLI#compile command', () => {
       vars: {},
       sources: {},
       keys: {},
+      services: {
+        my_service: sourceFile,
+      },
     };
 
     writeFileSync(configFile, stringify(configVar), 'utf8');
 
     const { stdout, exitCode } = await execa(
       'node',
-      [CLI_PATH, '--json', '-vvv', '--config', configFile, 'compile', sourceFile],
+      [CLI_PATH, '--json', '-vvv', '--config', configFile, 'compile', 'my_service'],
       {
         reject: false,
         env: { ...GOOD_VAR, ...BAD_VAR },
@@ -193,6 +241,7 @@ describe('CLI#compile command', () => {
       vars: CONFIG_ENV_VARS,
       sources: {},
       keys: {},
+      services: {},
     };
 
     writeFileSync(configFile, stringify(configVar), 'utf8');
@@ -237,10 +286,25 @@ describe('CLI#compile command', () => {
 
     writeFileSync(file, stringify(envVar), 'utf8');
 
-    const { stdout, exitCode } = await execa('node', [CLI_PATH, '--json', 'compile', file], {
-      reject: false,
-      env: { ENCRYPTION_KEY },
-    });
+    const configFile = join(dir, 'config.yaml');
+    const configVar: Config = {
+      vars: {},
+      sources: {},
+      keys: {},
+      services: {
+        my_service: file,
+      },
+    };
+    writeFileSync(configFile, stringify(configVar), 'utf8');
+
+    const { stdout, exitCode } = await execa(
+      'node',
+      [CLI_PATH, '--json', '--config', configFile, 'compile', 'my_service'],
+      {
+        reject: false,
+        env: { ENCRYPTION_KEY },
+      },
+    );
 
     expect(exitCode).toBe(0);
 
@@ -268,9 +332,24 @@ describe('CLI#compile command', () => {
 
       writeFileSync(file, stringify(envVar), 'utf8');
 
-      const { stdout, exitCode } = await execa('node', [CLI_PATH, '--json', 'compile', file], {
-        reject: false,
-      });
+      const configFile = join(dir, 'config.yaml');
+      const configVar: Config = {
+        vars: {},
+        sources: {},
+        keys: {},
+        services: {
+          my_service: file,
+        },
+      };
+      writeFileSync(configFile, stringify(configVar), 'utf8');
+
+      const { stdout, exitCode } = await execa(
+        'node',
+        [CLI_PATH, '--json', '--config', configFile, 'compile', 'my_service'],
+        {
+          reject: false,
+        },
+      );
 
       expect(exitCode).toBe(0);
 
@@ -297,9 +376,20 @@ describe('CLI#compile command', () => {
 
       writeFileSync(file, stringify(envVar), 'utf8');
 
+      const configFile = join(dir, 'config.yaml');
+      const configVar: Config = {
+        vars: {},
+        sources: {},
+        keys: {},
+        services: {
+          my_service: file,
+        },
+      };
+      writeFileSync(configFile, stringify(configVar), 'utf8');
+
       const { stdout, exitCode, stderr } = await execa(
         'node',
-        [CLI_PATH, '--json', 'compile', file],
+        [CLI_PATH, '--json', '--config', configFile, 'compile', 'my_service'],
         {
           reject: false,
         },
@@ -327,9 +417,24 @@ describe('CLI#compile command', () => {
 
       writeFileSync(file, stringify(envVar), 'utf8');
 
-      const { stdout, exitCode } = await execa('node', [CLI_PATH, '--json', 'compile', file], {
-        reject: false,
-      });
+      const configFile = join(dir, 'config.yaml');
+      const configVar: Config = {
+        vars: {},
+        sources: {},
+        keys: {},
+        services: {
+          my_service: file,
+        },
+      };
+      writeFileSync(configFile, stringify(configVar), 'utf8');
+
+      const { stdout, exitCode } = await execa(
+        'node',
+        [CLI_PATH, '--json', '--config', configFile, 'compile', 'my_service'],
+        {
+          reject: false,
+        },
+      );
 
       expect(exitCode).toBe(0);
 
@@ -356,9 +461,20 @@ describe('CLI#compile command', () => {
 
       writeFileSync(file, stringify(envVar), 'utf8');
 
+      const configFile = join(dir, 'config.yaml');
+      const configVar: Config = {
+        vars: {},
+        sources: {},
+        keys: {},
+        services: {
+          my_service: file,
+        },
+      };
+      writeFileSync(configFile, stringify(configVar), 'utf8');
+
       const { stdout, exitCode, stderr } = await execa(
         'node',
-        [CLI_PATH, '--json', 'compile', file],
+        [CLI_PATH, '--json', '--config', configFile, 'compile', 'my_service'],
         {
           reject: false,
         },
@@ -390,9 +506,24 @@ describe('CLI#compile command', () => {
 
       writeFileSync(file, stringify(envVar), 'utf8');
 
-      const { stdout, exitCode } = await execa('node', [CLI_PATH, '--json', 'compile', file], {
-        reject: false,
-      });
+      const configFile = join(dir, 'config.yaml');
+      const configVar: Config = {
+        vars: {},
+        sources: {},
+        keys: {},
+        services: {
+          my_service: file,
+        },
+      };
+      writeFileSync(configFile, stringify(configVar), 'utf8');
+
+      const { stdout, exitCode } = await execa(
+        'node',
+        [CLI_PATH, '--json', '--config', configFile, 'compile', 'my_service'],
+        {
+          reject: false,
+        },
+      );
 
       expect(exitCode).toBe(0);
 
@@ -423,9 +554,20 @@ describe('CLI#compile command', () => {
 
       writeFileSync(file, stringify(envVar), 'utf8');
 
+      const configFile = join(dir, 'config.yaml');
+      const configVar: Config = {
+        vars: {},
+        sources: {},
+        keys: {},
+        services: {
+          my_service: file,
+        },
+      };
+      writeFileSync(configFile, stringify(configVar), 'utf8');
+
       const { stdout, exitCode, stderr } = await execa(
         'node',
-        [CLI_PATH, '--json', 'compile', file],
+        [CLI_PATH, '--json', '--config', configFile, 'compile', 'my_service'],
         {
           reject: false,
         },
@@ -455,9 +597,24 @@ describe('CLI#compile command', () => {
 
       writeFileSync(file, stringify(envVar), 'utf8');
 
-      const { stdout, exitCode } = await execa('node', [CLI_PATH, '--json', 'compile', file], {
-        reject: false,
-      });
+      const configFile = join(dir, 'config.yaml');
+      const configVar: Config = {
+        vars: {},
+        sources: {},
+        keys: {},
+        services: {
+          my_service: file,
+        },
+      };
+      writeFileSync(configFile, stringify(configVar), 'utf8');
+
+      const { stdout, exitCode } = await execa(
+        'node',
+        [CLI_PATH, '--json', '--config', configFile, 'compile', 'my_service'],
+        {
+          reject: false,
+        },
+      );
 
       expect(exitCode).toBe(0);
 
@@ -484,9 +641,20 @@ describe('CLI#compile command', () => {
 
       writeFileSync(file, stringify(envVar), 'utf8');
 
+      const configFile = join(dir, 'config.yaml');
+      const configVar: Config = {
+        vars: {},
+        sources: {},
+        keys: {},
+        services: {
+          my_service: file,
+        },
+      };
+      writeFileSync(configFile, stringify(configVar), 'utf8');
+
       const { stdout, exitCode, stderr } = await execa(
         'node',
-        [CLI_PATH, '--json', 'compile', file],
+        [CLI_PATH, '--json', '--config', configFile, 'compile', 'my_service'],
         {
           reject: false,
         },
