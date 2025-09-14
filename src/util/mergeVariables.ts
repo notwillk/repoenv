@@ -3,6 +3,8 @@ import getDerivationOrder from '@/util/getDerivationOrder';
 import processVariable from '@/util/processVariable';
 import logger from '@/util/logger';
 import { Variables } from '@/schemas/versions/source/v0';
+import { isPlainStringVariable } from '@/schemas/versions/variable';
+import FailedUniquenessCheckError from '@/errors/FailedUniquenessCheckError';
 
 type Options = {
   incomingEnvVars: EnvVars;
@@ -39,6 +41,30 @@ export default async function mergeVariables({
       }
     }),
   );
+
+  varsToProcess.forEach((varName) => {
+    if (variables && varName in variables) {
+      const def = variables[varName];
+      if (!isPlainStringVariable(def)) {
+        const { unique } = def;
+        if (unique !== undefined) {
+          logger.debug(`Checking variable ${varName} for uniqueness`);
+          const maybeUniqueEnvVars = envVars.filter(unique);
+          const value = envVars.get(varName).getValue();
+          maybeUniqueEnvVars.entries().forEach(([otherVar, otherValue]) => {
+            const good = otherValue.getValue() !== value || otherVar === varName;
+            if (!good) {
+              throw new FailedUniquenessCheckError({
+                variable: varName,
+                value: String(value),
+                conflictingVariable: otherVar,
+              });
+            }
+          });
+        }
+      }
+    }
+  });
 
   return envVars;
 }

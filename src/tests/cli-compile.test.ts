@@ -368,6 +368,75 @@ describe('CLI#compile command', () => {
     });
   });
 
+  describe('uniqueness validation', () => {
+    it('passes validation if value is unique', async () => {
+      const dir = temporaryDirectory();
+      const file = join(dir, 'env.yaml');
+      const envVar: Source = {
+        vars: {
+          FOO: {
+            value: 'unique-value-1',
+            unique: ['FOO', 'BAR'],
+          },
+          BAR: {
+            value: 'unique-value-2',
+            unique: ['FOO', 'BAR'],
+          },
+        },
+        filter: ['FOO', 'BAR'],
+      };
+
+      writeFileSync(file, stringify(envVar), 'utf8');
+
+      const { stdout, exitCode } = await execa('node', [CLI_PATH, '--json', 'compile', file], {
+        reject: false,
+      });
+
+      expect(exitCode).toBe(0);
+
+      let parsed;
+      expect(() => {
+        parsed = JSON.parse(stdout.trim());
+      }).not.toThrow();
+
+      expect(parsed).toMatchObject({ FOO: 'unique-value-1', BAR: 'unique-value-2' });
+    });
+
+    it('fails validation if value is not unique', async () => {
+      const dir = temporaryDirectory();
+      const file = join(dir, 'env.yaml');
+      const envVar: Source = {
+        vars: {
+          FOO: {
+            value: 'not-unique',
+            unique: ['FOO', 'BAR'],
+          },
+          BAR: {
+            value: 'not-unique',
+            unique: ['FOO', 'BAR'],
+          },
+        },
+        filter: ['FOO', 'BAR'],
+      };
+
+      writeFileSync(file, stringify(envVar), 'utf8');
+
+      const { stdout, exitCode, stderr } = await execa(
+        'node',
+        [CLI_PATH, '--json', 'compile', file],
+        {
+          reject: false,
+        },
+      );
+
+      expect(exitCode).not.toBe(0);
+      expect(stderr).toContain(
+        'Uniqueness check failed for variable FOO with value not-unique, same as BAR',
+      );
+      expect(stdout.trim()).toBe('');
+    });
+  });
+
   describe('regexp validation', () => {
     it('passes validation if string match', async () => {
       const dir = temporaryDirectory();
