@@ -19,8 +19,8 @@ export default async function mergeVariables({
   logger.debug(`Incoming env var keys ${Object.keys(envVars)}`);
 
   const derivationOrder = getDerivationOrder(variables);
-  const otherSourceVars = variables ? Object.keys(variables).filter((k) => !(k in envVars)) : [];
-  const otherIncomingVars = Object.keys(envVars).filter((k) => !derivationOrder.includes(k));
+  const otherSourceVars = variables ? Object.keys(variables).filter((k) => !envVars.has(k)) : [];
+  const otherIncomingVars = envVars.keys().filter((k) => !derivationOrder.includes(k));
   const varsToProcess = [...otherIncomingVars, ...otherSourceVars, ...derivationOrder];
 
   logger.debug(`Var process order: ${varsToProcess}`);
@@ -32,7 +32,7 @@ export default async function mergeVariables({
         const def = variables[varName];
         const value = await processVariable({ def, cwd, envVars });
         envVars.set(varName, value);
-      } else if (varName in envVars) {
+      } else if (envVars.has(varName)) {
         logger.debug(`No change in variable ${varName}, using existing value`);
       } else {
         throw new Error(`Variable ${varName} not found in source file or environment`);
