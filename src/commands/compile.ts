@@ -22,7 +22,7 @@ export function compileCommandHandler(
   logger.debug('Globals', command.globals);
 
   const inbound_filter = config?.data?.inbound_filter;
-  const processEnvVars = new EnvVars(process.env);
+  const processEnvVars = EnvVars.fromObject(process.env);
 
   const incomingEnvVars = inbound_filter ? processEnvVars.filter(inbound_filter) : processEnvVars;
 

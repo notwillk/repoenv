@@ -3,6 +3,7 @@ import getDerivationOrder from '@/util/getDerivationOrder';
 import processVariable from '@/util/processVariable';
 import logger from '@/util/logger';
 import { Variables } from '@/schemas/versions/source/v0';
+import Value from './Value';
 
 type Options = {
   incomingEnvVars: EnvVars;
@@ -26,7 +27,7 @@ export default function mergeVariables({ incomingEnvVars, variables, cwd }: Opti
       logger.debug(`Processing variable ${varName} from source file`);
       const def = variables[varName];
       const value = processVariable({ def, cwd, envVars });
-      envVars.set(varName, value);
+      envVars.set(varName, new Value({ value }));
     } else if (varName in envVars) {
       logger.debug(`No change in variable ${varName}, using existing value`);
     } else {

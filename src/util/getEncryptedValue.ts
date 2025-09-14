@@ -25,7 +25,7 @@ export default function getEncryptedValue({ def, envVars }: Options): string {
   const decrypt = DECRYPTION_FUNCTIONS[def.encryption_algorithm];
   return decrypt({
     ciphertext: def.encrypted,
-    key: encryptionKey,
+    key: encryptionKey.getValue()!,
     encoding: def.encryption_encoding,
   });
 }
