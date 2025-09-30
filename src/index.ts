@@ -6,7 +6,7 @@ import GlobalOptionsSchema from '@/GlobalOptionsSchema';
 import GlobalCommand from '@/GlobalCommand';
 import logger from '@/util/logger';
 import { getGitRoot } from '@/util/git';
-import config from '@/util/config';
+import config from '@/configs/config';
 import { exit } from 'node:process';
 import { keyInitCommandHandler } from './commands/keyInit';
 import { initCommandHandler } from './commands/init';

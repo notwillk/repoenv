@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import GlobalCommand from '@/GlobalCommand';
 import logger from '@/util/logger';
-import config from '@/util/config';
+import config from '@/configs/config';
 import ConfigFileExistsError from '@/errors/ConfigFileExistsError';
 import DEFAULT_CONFIG from '@/defaults/config';
 import defaultConfigPath from '@/util/defaultConfigPath';

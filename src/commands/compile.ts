@@ -4,7 +4,7 @@ import GlobalCommand from '@/GlobalCommand';
 import logger from '@/util/logger';
 import output from '@/util/output';
 import processSourceFile from '@/util/sourceFile/processSourceFile';
-import config from '@/util/config';
+import config from '@/configs/config';
 import mergeVariables from '@/util/mergeVariables';
 import EnvVars from '@/util/EnvVars';
 import UndefinedServiceError from '@/errors/UndefinedServiceError';

@@ -4,7 +4,7 @@ import { parseDocument } from 'yaml';
 
 import GlobalCommand from '@/GlobalCommand';
 import logger from '@/util/logger';
-import config from '@/util/config';
+import config from '@/configs/config';
 import ExistingSecretKeyError from '@/errors/ExistingSecretKeyError';
 import UninitializedConfigError from '@/errors/UninitializedConfigError';
 import { KeyTypeSchema } from '@/schemas/versions/config/v0';
