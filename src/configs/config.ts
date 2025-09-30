@@ -31,24 +31,28 @@ class Config {
     }
 
     this.configPath = configPath;
-    this.sources = Object.fromEntries(
-      Object.entries(this.data?.services || {}).map(([serviceName, servicePath]) => [
-        serviceName,
-        makeAbsolutePath(servicePath),
-      ]),
-    );
     this.services = Object.fromEntries(
-      Object.entries(this.sources).map(([serviceName, servicePath]) => {
+      Object.entries(this.data?.services || {}).map(([serviceName, servicePath]) => {
         const service = new Service();
-        service.load(servicePath);
+        service.load(makeAbsolutePath(servicePath));
+
         return [serviceName, service];
       }),
     );
   }
 
-  static fromJson(json: unknown): Config {
+  static fromJson(json: unknown, serviceJsons: Record<string, unknown>): Config {
     const config = new Config();
     config.data = ConfigSchema.parse(json);
+
+    Object.keys(config.data.services).forEach((serviceName) => {
+      if (!(serviceName in serviceJsons)) {
+        throw new Error(`Service JSON for '${serviceName}' is required`);
+      }
+
+      config.services[serviceName] = Service.fromJson(serviceJsons[serviceName]);
+    });
+
     return config;
   }
 }
