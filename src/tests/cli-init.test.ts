@@ -24,7 +24,7 @@ describe('CLI#init command', () => {
 
     const newFile = readFileSync(configFile, 'utf8');
 
-    expect(newFile).toContain(['vars: {}', 'sources: {}', 'keys: {}'].join('\n'));
+    expect(newFile).toContain(['vars: {}', 'keys: {}'].join('\n'));
   });
 
   it('errors when initializing when config file exists', async () => {

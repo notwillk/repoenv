@@ -13,7 +13,6 @@ describe('CLI#keyinit command', () => {
     const configFile = join(dir, 'config.yaml');
     const configVar: Omit<Config, 'keys'> = {
       vars: {},
-      sources: {},
       services: {},
     };
 
@@ -51,7 +50,6 @@ describe('CLI#keyinit command', () => {
     const configFile = join(dir, 'config.yaml');
     const configVar: Config = {
       vars: {},
-      sources: {},
       services: {},
       keys: { EXISTING_KEY: { scheme: 'aes-256-gcm', update: { cmd: 'cat # update this' } } },
     };
@@ -95,7 +93,6 @@ describe('CLI#keyinit command', () => {
     const configFile = join(dir, 'config.yaml');
     const configVar: Config = {
       vars: {},
-      sources: {},
       services: {},
       keys: { EXISTING_KEY: { scheme: 'aes-256-gcm', update: { cmd: 'cat # update this' } } },
     };
@@ -129,7 +126,6 @@ describe('CLI#keyinit command', () => {
     const configFile = join(dir, 'config.yaml');
     const configVar: Config = {
       vars: {},
-      sources: {},
       services: {},
       keys: { EXISTING_KEY: { scheme: 'aes-256-gcm', update: { cmd: 'cat # update this' } } },
     };

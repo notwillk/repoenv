@@ -2,7 +2,7 @@ import EnvVars from '@/util/EnvVars';
 import getDerivationOrder from '@/util/getDerivationOrder';
 import processVariable from '@/util/processVariable';
 import logger from '@/util/logger';
-import { Variables } from '@/schemas/versions/source/v0';
+import { Variables } from '@/schemas/versions/service/v0';
 import { isPlainStringVariable } from '@/schemas/versions/variable';
 import FailedUniquenessCheckError from '@/errors/FailedUniquenessCheckError';
 
@@ -21,23 +21,23 @@ export default async function mergeVariables({
   logger.debug(`Incoming env var keys ${Object.keys(envVars)}`);
 
   const derivationOrder = getDerivationOrder(variables);
-  const otherSourceVars = variables ? Object.keys(variables).filter((k) => !envVars.has(k)) : [];
+  const otherServiceVars = variables ? Object.keys(variables).filter((k) => !envVars.has(k)) : [];
   const otherIncomingVars = envVars.keys().filter((k) => !derivationOrder.includes(k));
-  const varsToProcess = [...otherIncomingVars, ...otherSourceVars, ...derivationOrder];
+  const varsToProcess = [...otherIncomingVars, ...otherServiceVars, ...derivationOrder];
 
   logger.debug(`Var process order: ${varsToProcess}`);
 
   await Promise.all(
     varsToProcess.map(async (varName) => {
       if (variables && varName in variables) {
-        logger.debug(`Processing variable ${varName} from source file`);
+        logger.debug(`Processing variable ${varName} from service file`);
         const def = variables[varName];
         const value = await processVariable({ def, cwd, envVars });
         envVars.set(varName, value);
       } else if (envVars.has(varName)) {
         logger.debug(`No change in variable ${varName}, using existing value`);
       } else {
-        throw new Error(`Variable ${varName} not found in source file or environment`);
+        throw new Error(`Variable ${varName} not found in service file or environment`);
       }
     }),
   );

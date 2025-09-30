@@ -1,5 +1,5 @@
 import z from 'zod';
-import { variablesSchema } from '../source/v0';
+import { variablesSchema } from '../service/v0';
 import { VariableNameSchema } from '../variable';
 
 const KeyUpdateSchema = z.object({
@@ -36,7 +36,6 @@ export default z.object({
   version: z.literal('v0').optional(),
   inbound_filter: z.array(z.string()).optional(),
   vars: variablesSchema.optional().default({}),
-  sources: z.record(z.string(), z.array(z.string())),
   keys: z.record(VariableNameSchema, KeySchema).optional().default({}),
   services: z.record(z.string(), z.string()).optional().default({}),
 });

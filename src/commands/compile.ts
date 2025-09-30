@@ -3,7 +3,7 @@ import { z } from 'zod';
 import GlobalCommand from '@/GlobalCommand';
 import logger from '@/util/logger';
 import output from '@/util/output';
-import processSourceFile from '@/util/sourceFile/processSourceFile';
+import processServiceFile from '@/util/serviceFile/processServiceFile';
 import config from '@/configs/config';
 import mergeVariables from '@/util/mergeVariables';
 import EnvVars from '@/util/EnvVars';
@@ -27,7 +27,7 @@ export async function compileCommandHandler(
 
   const incomingEnvVars = inbound_filter ? processEnvVars.filter(inbound_filter) : processEnvVars;
 
-  const sourceEnvVars =
+  const serviceEnvVars =
     config.data?.vars && config.configPath
       ? await mergeVariables({
           incomingEnvVars,
@@ -36,18 +36,18 @@ export async function compileCommandHandler(
         })
       : incomingEnvVars;
 
-  const filePath = config.sources[serviceName] || null;
+  const filePath = config.serviceFiles[serviceName] || null;
 
   if (serviceName && !filePath) {
     throw new UndefinedServiceError({ serviceName });
   }
 
   const envVars = filePath
-    ? await processSourceFile({
+    ? await processServiceFile({
         filePath,
-        incomingEnvVars: sourceEnvVars,
+        incomingEnvVars: serviceEnvVars,
       })
-    : sourceEnvVars;
+    : serviceEnvVars;
 
   const format = command.globals.json ? 'json' : 'dotenv';
   output(envVars, { format, keysOnly: options.keysOnly });

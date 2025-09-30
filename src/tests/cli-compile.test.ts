@@ -5,7 +5,7 @@ import { CLI_PATH } from './constants';
 import { join } from 'node:path';
 import { writeFileSync } from 'node:fs';
 import { stringify } from 'yaml';
-import { Source } from '@/schemas/source';
+import { Service } from '@/schemas/service';
 import { Config } from '@/schemas/config';
 import { aes256GcmEncrypt, aes256GcmGenerateKey } from '../util/crypto';
 
@@ -41,7 +41,7 @@ describe('CLI#compile command', () => {
   it('outputs only foo with only foo filter', async () => {
     const dir = temporaryDirectory();
     const file = join(dir, 'env.yaml');
-    const envVar: Source = {
+    const envVar: Service = {
       vars: {},
       filter: ['FOO'],
     };
@@ -50,7 +50,6 @@ describe('CLI#compile command', () => {
     const configFile = join(dir, 'config.yaml');
     const configVar: Config = {
       vars: {},
-      sources: {},
       keys: {},
       services: {
         my_servie: file,
@@ -73,7 +72,7 @@ describe('CLI#compile command', () => {
   it('outputs foo and bar', async () => {
     const dir = temporaryDirectory();
     const file = join(dir, 'env.yaml');
-    const envVar: Source = {
+    const envVar: Service = {
       vars: { BAR: 'should appear' },
       filter: ['FOO', 'BAR'],
     };
@@ -83,7 +82,6 @@ describe('CLI#compile command', () => {
     const configFile = join(dir, 'config.yaml');
     const configVar: Config = {
       vars: {},
-      sources: {},
       keys: {},
       services: {
         my_servie: file,
@@ -112,7 +110,7 @@ describe('CLI#compile command', () => {
   it('outputs foo and derived bar', async () => {
     const dir = temporaryDirectory();
     const file = join(dir, 'env.yaml');
-    const envVar: Source = {
+    const envVar: Service = {
       vars: { BAR: { value: '-->${FOO}<--' } },
       filter: ['FOO', 'BAR'],
     };
@@ -121,7 +119,6 @@ describe('CLI#compile command', () => {
     const configFile = join(dir, 'config.yaml');
     const configVar: Config = {
       vars: {},
-      sources: {},
       keys: {},
       services: {
         my_servie: file,
@@ -150,7 +147,7 @@ describe('CLI#compile command', () => {
   it('outputs foo and bar keys only', async () => {
     const dir = temporaryDirectory();
     const file = join(dir, 'env.yaml');
-    const envVar: Source = {
+    const envVar: Service = {
       vars: { BAR: { value: 'boop' } },
       filter: ['FOO', 'BAR'],
     };
@@ -159,7 +156,6 @@ describe('CLI#compile command', () => {
     const configFile = join(dir, 'config.yaml');
     const configVar: Config = {
       vars: {},
-      sources: {},
       keys: {},
       services: {
         my_service: file,
@@ -190,21 +186,20 @@ describe('CLI#compile command', () => {
     const BAD_VAR = { BAR: 'should not appear' };
 
     const dir = temporaryDirectory();
-    const sourceFile = join(dir, 'env.yaml');
-    const envVar: Source = {
+    const serviceFile = join(dir, 'env.yaml');
+    const envVar: Service = {
       vars: {},
     };
 
-    writeFileSync(sourceFile, stringify(envVar), 'utf8');
+    writeFileSync(serviceFile, stringify(envVar), 'utf8');
 
     const configFile = join(dir, 'config.yaml');
     const configVar: Config = {
       inbound_filter: Object.keys(GOOD_VAR),
       vars: {},
-      sources: {},
       keys: {},
       services: {
-        my_service: sourceFile,
+        my_service: serviceFile,
       },
     };
 
@@ -239,7 +234,6 @@ describe('CLI#compile command', () => {
     const configVar: Config = {
       inbound_filter: Object.keys(ENV_VARS),
       vars: CONFIG_ENV_VARS,
-      sources: {},
       keys: {},
       services: {},
     };
@@ -272,7 +266,7 @@ describe('CLI#compile command', () => {
     const dir = temporaryDirectory();
 
     const file = join(dir, 'env.yaml');
-    const envVar: Source = {
+    const envVar: Service = {
       vars: {
         BAR: {
           encrypted: aes256GcmEncrypt({ plaintext, key: ENCRYPTION_KEY, encoding: 'base64' }),
@@ -289,7 +283,6 @@ describe('CLI#compile command', () => {
     const configFile = join(dir, 'config.yaml');
     const configVar: Config = {
       vars: {},
-      sources: {},
       keys: {},
       services: {
         my_service: file,
@@ -320,7 +313,7 @@ describe('CLI#compile command', () => {
     it('passes validation when command exits with 0', async () => {
       const dir = temporaryDirectory();
       const file = join(dir, 'env.yaml');
-      const envVar: Source = {
+      const envVar: Service = {
         vars: {
           FOO: {
             value: 'valid-value',
@@ -335,7 +328,6 @@ describe('CLI#compile command', () => {
       const configFile = join(dir, 'config.yaml');
       const configVar: Config = {
         vars: {},
-        sources: {},
         keys: {},
         services: {
           my_service: file,
@@ -364,7 +356,7 @@ describe('CLI#compile command', () => {
     it('fails validation when command exits with non-0', async () => {
       const dir = temporaryDirectory();
       const file = join(dir, 'env.yaml');
-      const envVar: Source = {
+      const envVar: Service = {
         vars: {
           FOO: {
             value: 'invalid-value',
@@ -379,7 +371,6 @@ describe('CLI#compile command', () => {
       const configFile = join(dir, 'config.yaml');
       const configVar: Config = {
         vars: {},
-        sources: {},
         keys: {},
         services: {
           my_service: file,
@@ -405,7 +396,7 @@ describe('CLI#compile command', () => {
     it('passes validation if format matches', async () => {
       const dir = temporaryDirectory();
       const file = join(dir, 'env.yaml');
-      const envVar: Source = {
+      const envVar: Service = {
         vars: {
           FOO: {
             value: 'abc123',
@@ -420,7 +411,6 @@ describe('CLI#compile command', () => {
       const configFile = join(dir, 'config.yaml');
       const configVar: Config = {
         vars: {},
-        sources: {},
         keys: {},
         services: {
           my_service: file,
@@ -449,7 +439,7 @@ describe('CLI#compile command', () => {
     it('fails validation if format does not match', async () => {
       const dir = temporaryDirectory();
       const file = join(dir, 'env.yaml');
-      const envVar: Source = {
+      const envVar: Service = {
         vars: {
           FOO: {
             value: 'xyz789',
@@ -464,7 +454,6 @@ describe('CLI#compile command', () => {
       const configFile = join(dir, 'config.yaml');
       const configVar: Config = {
         vars: {},
-        sources: {},
         keys: {},
         services: {
           my_service: file,
@@ -490,7 +479,7 @@ describe('CLI#compile command', () => {
     it('passes validation if value is unique', async () => {
       const dir = temporaryDirectory();
       const file = join(dir, 'env.yaml');
-      const envVar: Source = {
+      const envVar: Service = {
         vars: {
           FOO: {
             value: 'unique-value-1',
@@ -509,7 +498,6 @@ describe('CLI#compile command', () => {
       const configFile = join(dir, 'config.yaml');
       const configVar: Config = {
         vars: {},
-        sources: {},
         keys: {},
         services: {
           my_service: file,
@@ -538,7 +526,7 @@ describe('CLI#compile command', () => {
     it('fails validation if value is not unique', async () => {
       const dir = temporaryDirectory();
       const file = join(dir, 'env.yaml');
-      const envVar: Source = {
+      const envVar: Service = {
         vars: {
           FOO: {
             value: 'not-unique',
@@ -557,7 +545,6 @@ describe('CLI#compile command', () => {
       const configFile = join(dir, 'config.yaml');
       const configVar: Config = {
         vars: {},
-        sources: {},
         keys: {},
         services: {
           my_service: file,
@@ -585,7 +572,7 @@ describe('CLI#compile command', () => {
     it('passes validation if string match', async () => {
       const dir = temporaryDirectory();
       const file = join(dir, 'env.yaml');
-      const envVar: Source = {
+      const envVar: Service = {
         vars: {
           FOO: {
             value: 'abc123',
@@ -600,7 +587,6 @@ describe('CLI#compile command', () => {
       const configFile = join(dir, 'config.yaml');
       const configVar: Config = {
         vars: {},
-        sources: {},
         keys: {},
         services: {
           my_service: file,
@@ -629,7 +615,7 @@ describe('CLI#compile command', () => {
     it('fails validation if string does not match', async () => {
       const dir = temporaryDirectory();
       const file = join(dir, 'env.yaml');
-      const envVar: Source = {
+      const envVar: Service = {
         vars: {
           FOO: {
             value: 'xyz789',
@@ -644,7 +630,6 @@ describe('CLI#compile command', () => {
       const configFile = join(dir, 'config.yaml');
       const configVar: Config = {
         vars: {},
-        sources: {},
         keys: {},
         services: {
           my_service: file,

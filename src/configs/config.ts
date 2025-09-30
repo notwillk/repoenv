@@ -12,8 +12,8 @@ import Service from './Service';
 class Config {
   configPath: string | null = null;
   data: z.infer<typeof ConfigSchema> | null = null;
-  sources: Record<string, string> = {};
   services: Record<string, Service> = {};
+  serviceFiles: Record<string, string> = {};
 
   load(env?: string): void {
     const useDefaultConfigFile = !env;
@@ -31,6 +31,14 @@ class Config {
     }
 
     this.configPath = configPath;
+
+    this.serviceFiles = Object.fromEntries(
+      Object.entries(this.data?.services || {}).map(([serviceName, servicePath]) => [
+        serviceName,
+        makeAbsolutePath(servicePath),
+      ]),
+    );
+
     this.services = Object.fromEntries(
       Object.entries(this.data?.services || {}).map(([serviceName, servicePath]) => {
         const service = new Service();

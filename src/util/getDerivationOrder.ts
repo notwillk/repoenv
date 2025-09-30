@@ -7,7 +7,7 @@ import {
   isValueVariable,
 } from '@/schemas/versions/variable';
 import logger from './logger';
-import { Variables } from '@/schemas/versions/source/v0';
+import { Variables } from '@/schemas/versions/service/v0';
 
 export function getDerivationDependencies(vars: Variables): Array<[string, string | undefined]> {
   const edges: Array<[string, string | undefined]> = [];
